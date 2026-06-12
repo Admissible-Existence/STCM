@@ -1,0 +1,2 @@
+This directory is intentionally tracked. Do not use .gitkeep — iOS strips
+leading dots from filenames in zip archives, so KEEP files are used instead.

@@ -1,0 +1,68 @@
+# completeness_policy.yaml
+# Maps transition risk tier -> required receipt completeness level (STCM §3)
+# and the mandatory conservation-record fields that must be non-null for closure.
+#
+# This answers v0.2 Open Question #2. It is DATA, not code: the closure predicate
+# reads this to decide which fields gate closure for a given transition.
+#
+# Completeness levels (STCM §3 Receipt Completeness Range):
+#   0 no receipt | 1 existence only | 2 some | 3 required | 4 sufficient
+#   5 complete | 6 complete+content | 7 complete+authority/evidence/runtime revalidation
+
+version: "0.1"
+
+# Risk tier of a transition is declared on the transition_contract.
+# Deletion / disposition is forced to irreversible regardless of caller claim.
+risk_tiers:
+  low:
+    min_completeness_level: 1
+    required_fields:
+      - incoming_receipts.complete
+      - result.resulting_state
+  medium:
+    min_completeness_level: 3
+    required_fields:
+      - incoming_receipts.complete
+      - evidence.status
+      - result.resulting_state
+      - result.receipt_id
+  high:
+    min_completeness_level: 5
+    required_fields:
+      - incoming_receipts.complete
+      - evidence.status
+      - authority.status
+      - phase_parameter.phase_change_type
+      - result.resulting_state
+      - result.receipt_id
+  irreversible:
+    min_completeness_level: 7
+    required_fields:
+      - incoming_receipts.complete
+      - evidence.status
+      - authority.status
+      - phase_parameter.phase_change_type
+      - result.resulting_state
+      - result.receipt_id
+      - result.coherence_preserved
+
+# Transition types that are ALWAYS irreversible, overriding any declared tier.
+# Receipt-chain integrity: a deletion without a disposition record breaks the chain.
+forced_irreversible_transition_types:
+  - delete_file
+  - dispose_object
+  - retire_node
+  - dissolve_node
+  - cleanup_commit
+
+# Status enum values considered "bound/satisfied" for gating.
+satisfied_status_values:
+  evidence.status: [bound]
+  authority.status: [bound]
+
+# Transition-entropy is ADVISORY in v0.1 (STCM §10 / Open Question #6).
+# It is recorded but MUST NOT gate closure until numerically defined.
+advisory_only_fields:
+  - entropy.transition_entropy_required
+  - entropy.transition_entropy_released
+  - entropy.surplus_transition_entropy
