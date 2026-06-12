@@ -1,0 +1,42 @@
+# core-lite-intake.yml
+# PLACE AT: .github/workflows/core-lite-intake.yml
+# The SECOND and FINAL workflow file. This is the stable dispatcher.
+# It reads tools/task_registry.yaml and runs each registered task.
+# To add a feature: register a TASK in the registry. NEVER add a workflow file.
+
+name: core-lite-intake
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_id:
+        description: "Single task id to run (blank = run all registered tasks)"
+        required: false
+        default: ""
+  push:
+    paths:
+      - "tools/**"
+      - "docs/**"
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dispatcher deps
+        run: pip install pyyaml
+
+      - name: Run registered task(s)
+        env:
+          ONLY_TASK: ${{ github.event.inputs.task_id }}
+        run: python3 tools/dispatch.py

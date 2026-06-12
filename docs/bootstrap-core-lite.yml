@@ -1,0 +1,40 @@
+# bootstrap-core-lite.yml
+# PLACE AT: .github/workflows/bootstrap-core-lite.yml
+# One of EXACTLY TWO workflow files permitted in this repo. Never add a third.
+# This file is stable infrastructure: it does not change when features are added.
+# All new functionality is registered as a TASK invoked by core-lite-intake.yml.
+
+name: bootstrap-core-lite
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Verify Core-Lite skeleton
+        run: |
+          set -euo pipefail
+          test -f tools/task_registry.yaml || { echo "missing tools/task_registry.yaml"; exit 1; }
+          test -d tools/closure-harness || { echo "missing tools/closure-harness"; exit 1; }
+          echo "Core-Lite skeleton present."
+
+      - name: Workflow-count invariant (max 2 yml in workflows dir)
+        run: |
+          set -euo pipefail
+          count=$(find .github/workflows -maxdepth 1 -name '*.yml' | wc -l | tr -d ' ')
+          echo "workflow file count: $count"
+          test "$count" -le 2 || { echo "Core-Lite constraint violated: >2 workflow files"; exit 1; }
+          echo "Workflow-count invariant holds."
