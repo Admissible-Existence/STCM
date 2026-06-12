@@ -24,6 +24,8 @@ from fixtures import all_fixtures
 from node_fixtures import node_fixtures
 from composed_fixtures import composed_fixtures
 from compose import compose_record
+from merge_fixtures import merge_fixtures, _run_nodes
+from merge import merge_observations
 
 POLICY_PATH = Path(__file__).parent / "completeness_policy.yaml"
 
@@ -90,15 +92,42 @@ def matrix_from(results, ok_is_satisfied_when):
     return state
 
 
+def run_merge_layer(policy):
+    """Multi-node merge: nodes -> merge -> (if coherent) closure (STCM §19)."""
+    results, unexpected = [], 0
+    for fx in merge_fixtures():
+        outputs = _run_nodes(fx["transition"], fx["scope"],
+                             fx.get("partial_scope_for"))
+        mr = merge_observations(fx["transition"], outputs, fx["required"])
+        coh_ok = mr.coherent == fx["expect_coherent"]
+        reason_ok = True
+        closure_v = None
+        if not mr.coherent and "expect_reason" in fx:
+            reason_ok = mr.reason_code == fx["expect_reason"]
+        if mr.coherent:
+            # A coherent merge MUST yield a closable record.
+            res = evaluate_closure(mr.record, policy)
+            closure_v = res.verdict.value
+            reason_ok = res.verdict is Verdict.CLOSED
+        ok = coh_ok and reason_ok
+        unexpected += 0 if ok else 1
+        results.append({"fixture": fx["name"], "stage": fx["stage"],
+                        "coherent": mr.coherent, "reason": mr.reason_code,
+                        "closure": closure_v, "match": ok})
+    return results, unexpected
+
+
 def main() -> int:
     policy = yaml.safe_load(POLICY_PATH.read_text())
     node_res, node_unexp = run_node_layer()
     comp_res, comp_unexp = run_composed_layer(policy)
+    merge_res, merge_unexp = run_merge_layer(policy)
     clos_res, clos_unexp = run_closure_layer(policy)
-    total_unexp = node_unexp + comp_unexp + clos_unexp
+    total_unexp = node_unexp + comp_unexp + merge_unexp + clos_unexp
 
     node_matrix = matrix_from(node_res, lambda r: r["got"] == "BIND")
     comp_matrix = matrix_from(comp_res, lambda r: r["verdict"] == "CLOSED")
+    merge_matrix = matrix_from(merge_res, lambda r: r["coherent"] is True)
     clos_matrix = matrix_from(clos_res, lambda r: r["got"] == "CLOSED")
 
     report = {
@@ -107,6 +136,8 @@ def main() -> int:
                      "matrix": dict(sorted(node_matrix.items())), "details": node_res},
             "composed": {"run": len(comp_res), "unexpected": comp_unexp,
                          "matrix": dict(sorted(comp_matrix.items())), "details": comp_res},
+            "merge": {"run": len(merge_res), "unexpected": merge_unexp,
+                      "matrix": dict(sorted(merge_matrix.items())), "details": merge_res},
             "closure": {"run": len(clos_res), "unexpected": clos_unexp,
                         "matrix": dict(sorted(clos_matrix.items())), "details": clos_res},
         },
@@ -124,6 +155,7 @@ def main() -> int:
 
     dump("NODE LAYER (each PN in isolation)", node_matrix, node_unexp)
     dump("COMPOSED LAYER (transition -> 6 nodes -> closure)", comp_matrix, comp_unexp)
+    dump("MERGE LAYER (multi-node -> coherent receipt -> closure)", merge_matrix, merge_unexp)
     dump("CLOSURE LAYER (predicate regression)", clos_matrix, clos_unexp)
     print(f"\n  TOTAL unexpected: {total_unexp} "
           f"({'SATURATED' if total_unexp == 0 else 'FAILURES PRESENT'})", file=sys.stderr)

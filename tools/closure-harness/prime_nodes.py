@@ -3,7 +3,7 @@
 Each node is a pure function: (transition, scope) -> NodeOutput. A node contributes
 exactly ONE field to the conservation record. Nodes do not mutate shared state and
 do not call each other except PN-004, which reads the upstream node outputs to
-validate evidence_status + authority_status.
+validate (STCM §942 — PN-004 validates evidence_status + authority_status).
 
 Two STCM principles are enforced structurally:
 
@@ -136,7 +136,7 @@ def pn003_bind_authority(transition: dict, scope: dict) -> NodeOutput:
 # --------------------------------------------------------------------------- #
 # PN-004 — Transition Validation Node (§210)
 # Reads upstream node outputs + transition rule; emits ALLOW/DENY/FAIL_CLOSED.
-# This is the only node that reads other nodes' outputs.
+# This is the only node that reads other nodes' outputs (§942).
 # Contributes: result.decision
 # --------------------------------------------------------------------------- #
 def pn004_validate(transition: dict, scope: dict,
