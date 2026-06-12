@@ -1,0 +1,17 @@
+# task_registry.yaml — the ONLY place new functionality is added.
+# core-lite-intake.yml reads this and runs each task. Adding a feature means
+# adding an entry here, never adding a workflow file.
+
+version: "0.1"
+
+tasks:
+  - id: closure-harness
+    kind: validator
+    entry: tools/closure-harness/run_closure_harness.py
+    runtime: python3
+    deps: [pyyaml]
+    fail_on_nonzero_exit: true
+    description: >
+      Decides STCM conservation-record closure as a computed predicate and
+      reports a stage coverage matrix. Terminates on saturation, not on a
+      watched checkmark. Exit 0 = saturated; exit 1 = unexpected verdict.
