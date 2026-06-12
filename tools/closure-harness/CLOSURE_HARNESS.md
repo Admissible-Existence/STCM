@@ -17,6 +17,15 @@ coverage matrix with three terminal states per completeness stage:
 |`[-]`|PROVEN_UNSATISFIABLE|a negative fixture correctly refused/blocked, with reason|
 |`[ ]`|GAP                 |no fixture exercises this stage — logged, non-fatal      |
 
+## Current harness layers
+
+1. **Node layer** — each PN is tested in isolation.
+2. **Composed layer** — transition -> PN outputs -> conservation record -> closure.
+3. **Routing layer** — ignore / reroute / escalate front-gate behavior.
+4. **Routed-hop layer** — source reroutes -> recognized owner activates -> destination closes or governed non-closes.
+5. **Merge layer** — multi-node outputs form a coherent merged receipt only when required nodes are present, non-refused, and non-colliding.
+6. **Closure layer** — direct closure-predicate regression over hand-built records.
+
 ## Exit contract
 
 - `0` — every fixture matched its expected verdict (passing negatives count as success). Run is SATURATED.
@@ -31,10 +40,15 @@ closure-harness/
   closure.py               # decidable closure predicate, dead-basis guarded
   completeness_policy.yaml # risk-tier -> required fields/level
   fixtures.py              # direct closure-predicate regression fixtures
-  prime_nodes.py           # PN-001..PN-006 pure functions
+  prime_nodes.py           # PN-001..PN-006 pure functions + routing front-gate
   node_fixtures.py         # per-node isolation fixtures
   compose.py               # six-node output merger into conservation record
   composed_fixtures.py     # end-to-end transition fixtures
+  routing_fixtures.py      # ignore / reroute / escalate fixtures
+  routed_hop.py            # source-to-destination routed-hop integration
+  hop_fixtures.py          # routed-hop integration fixtures
+  merge.py                 # multi-node coherent-recognition merge
+  merge_fixtures.py        # merge/coherence fixtures
   run_closure_harness.py   # saturation runner / task entry point
 ```
 
@@ -50,7 +64,24 @@ tools/task_registry.yaml
 traces to an actual satisfied condition and names the field/reason on failure.
 Entropy fields are advisory and never gate closure until numerically defined (Open Q#6).
 
-## Next-pass hooks (logged GAPs become work items)
+## Current documented boundary
 
-- `low:multi_node_merge` — Open Q#11: merging multi-node receipts into one transition receipt.
-- Add fixtures as PN-001..006 expand, each PN contributing one closure condition.
+The current green/documented boundary is:
+
+```text
+STCM v0.3 — Routing, Routed-Hop, and Multi-Node Merge
+```
+
+See:
+
+```text
+docs/STCM_V0_3_ROUTED_HOP_AND_MERGE.md
+```
+
+## Next-pass hooks
+
+- Sequential receipt lineage — receipt(t0) -> transition(t1) -> receipt(t1) -> transition(t2).
+- Stale receipt refusal.
+- Superseded receipt handling.
+- Competing receipt-chain conflict detection.
+- Keep transition entropy advisory until lineage is proven.
