@@ -12,6 +12,8 @@ tasks:
     deps: [pyyaml]
     fail_on_nonzero_exit: true
     description: >
-      Decides STCM conservation-record closure as a computed predicate and
-      reports a stage coverage matrix. Terminates on saturation, not on a
-      watched checkmark. Exit 0 = saturated; exit 1 = unexpected verdict.
+      Decides STCM conservation-record closure as a computed predicate across
+      three layers: each Prime Node (PN-001..006) in isolation, the composed
+      transition->nodes->record->closure pipeline, and the closure-predicate
+      regression. Reports a coverage matrix per layer. Terminates on saturation,
+      not on a watched checkmark. Exit 0 = saturated; exit 1 = unexpected verdict.
