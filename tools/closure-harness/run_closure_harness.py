@@ -29,6 +29,8 @@ from merge import merge_observations
 from routing_fixtures import routing_fixtures
 from routed_hop import route_and_close
 from hop_fixtures import hop_fixtures
+from lineage_fixtures import lineage_fixtures
+from lineage_gate import gated_close
 
 POLICY_PATH = Path(__file__).parent / "completeness_policy.yaml"
 
@@ -160,6 +162,25 @@ def run_hop_layer(policy):
     return results, unexpected
 
 
+def run_lineage_layer(policy):
+    """Sequential receipt lineage: lineage gate BEFORE closure (STCM v0.4)."""
+    results, unexpected = [], 0
+    for fx in lineage_fixtures():
+        gr = gated_close(fx["record"], policy, fx["transition"],
+                         chain_head=fx.get("chain_head"),
+                         known_successors=fx.get("known_successors"))
+        lin_ok = gr.lineage.verdict == fx["expect_lineage"]
+        closed_ok = gr.closed == fx["expect_closed"]
+        ok = lin_ok and closed_ok
+        unexpected += 0 if ok else 1
+        results.append({"fixture": fx["name"], "stage": fx["stage"],
+                        "lineage": gr.lineage.verdict.value,
+                        "lineage_reason": gr.lineage.reason_code,
+                        "closed": gr.closed, "final_reason": gr.final_reason,
+                        "match": ok})
+    return results, unexpected
+
+
 def main() -> int:
     policy = yaml.safe_load(POLICY_PATH.read_text())
     node_res, node_unexp = run_node_layer()
@@ -167,9 +188,10 @@ def main() -> int:
     route_res, route_unexp = run_routing_layer()
     hop_res, hop_unexp = run_hop_layer(policy)
     merge_res, merge_unexp = run_merge_layer(policy)
+    lin_res, lin_unexp = run_lineage_layer(policy)
     clos_res, clos_unexp = run_closure_layer(policy)
     total_unexp = (node_unexp + comp_unexp + route_unexp + hop_unexp
-                   + merge_unexp + clos_unexp)
+                   + merge_unexp + lin_unexp + clos_unexp)
 
     node_matrix = matrix_from(node_res, lambda r: r["got"] == "BIND")
     comp_matrix = matrix_from(comp_res, lambda r: r["verdict"] == "CLOSED")
@@ -178,6 +200,7 @@ def main() -> int:
     hop_matrix = matrix_from(
         hop_res, lambda r: r["routed"] and r["matched"] and r["closed"])
     merge_matrix = matrix_from(merge_res, lambda r: r["coherent"] is True)
+    lin_matrix = matrix_from(lin_res, lambda r: r["lineage"] == "BOUND" and r["closed"])
     clos_matrix = matrix_from(clos_res, lambda r: r["got"] == "CLOSED")
 
     report = {
@@ -192,6 +215,8 @@ def main() -> int:
                            "matrix": dict(sorted(hop_matrix.items())), "details": hop_res},
             "merge": {"run": len(merge_res), "unexpected": merge_unexp,
                       "matrix": dict(sorted(merge_matrix.items())), "details": merge_res},
+            "lineage": {"run": len(lin_res), "unexpected": lin_unexp,
+                        "matrix": dict(sorted(lin_matrix.items())), "details": lin_res},
             "closure": {"run": len(clos_res), "unexpected": clos_unexp,
                         "matrix": dict(sorted(clos_matrix.items())), "details": clos_res},
         },
@@ -212,6 +237,7 @@ def main() -> int:
     dump("ROUTING LAYER (ignore / reroute / escalate)", route_matrix, route_unexp)
     dump("ROUTED-HOP LAYER (source reroutes -> dest closes)", hop_matrix, hop_unexp)
     dump("MERGE LAYER (multi-node -> coherent receipt -> closure)", merge_matrix, merge_unexp)
+    dump("LINEAGE LAYER (prior->current->next continuity, v0.4)", lin_matrix, lin_unexp)
     dump("CLOSURE LAYER (predicate regression)", clos_matrix, clos_unexp)
     print(f"\n  TOTAL unexpected: {total_unexp} "
           f"({'SATURATED' if total_unexp == 0 else 'FAILURES PRESENT'})", file=sys.stderr)
