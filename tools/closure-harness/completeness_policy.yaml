@@ -8,6 +8,10 @@
 # Completeness levels (STCM §3 Receipt Completeness Range):
 #   0 no receipt | 1 existence only | 2 some | 3 required | 4 sufficient
 #   5 complete | 6 complete+content | 7 complete+authority/evidence/runtime revalidation
+#
+# incoming_receipts.complete means the required receipt posture for the declared
+# risk tier is complete. For low-risk transitions, that may mean only receipt
+# existence is complete; it does NOT imply a complete receipt chain.
 
 version: "0.1"
 
