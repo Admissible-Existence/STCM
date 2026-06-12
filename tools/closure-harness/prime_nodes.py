@@ -29,9 +29,11 @@ from typing import Any
 
 
 class Engagement(str, Enum):
-    IGNORE = "IGNORE"
-    BIND = "BIND"
-    REFUSE = "REFUSE"
+    IGNORE = "IGNORE"        # §14: out of scope, no receipt
+    BIND = "BIND"            # matched and satisfied; contributes its field
+    REFUSE = "REFUSE"        # §14: in scope, required values missing/invalid
+    REROUTE = "REROUTE"      # §14: touched scope enough to know another node owns it
+    ESCALATE = "ESCALATE"    # §16: scope touch but no governed path resolvable here
 
 
 @dataclass(frozen=True)
@@ -40,26 +42,46 @@ class NodeOutput:
     engagement: Engagement
     field_path: str | None = None      # the single record field this node fills
     value: Any = None                  # value written when engagement == BIND
-    reason_code: str | None = None     # set when engagement == REFUSE
+    reason_code: str | None = None     # set when engagement == REFUSE/ESCALATE
     detail: str | None = None
+    route_to: str | None = None        # set when engagement == REROUTE
 
     @property
     def engaged(self) -> bool:
         return self.engagement is not Engagement.IGNORE
 
 
-def _in_scope(transition: dict, scope: dict) -> bool:
-    """Strict hash-match non-engagement (STCM §13).
+class ScopeMatch(str, Enum):
+    NONE = "NONE"      # no hash overlap at all -> IGNORE (§14)
+    TOUCH = "TOUCH"    # hits a routes_to family, not own activation -> REROUTE (§14)
+    MATCH = "MATCH"    # hits own activation scope -> engage
 
-    The node's scope declares hash families it may evaluate. A transition is in
-    scope iff at least one of its declared hashes is listed in the node's scope.
-    Cheap comparison before expensive interpretation (§12).
+
+def classify_scope(transition: dict, scope: dict) -> tuple[ScopeMatch, str | None]:
+    """Three-way scope classification (STCM §14/§15).
+
+    scope = {
+        "hashes":    [...],          # families this node ACTIVATES on
+        "routes_to": {hash: node},   # families this node RECOGNIZES as another's
+    }
+    Returns (ScopeMatch, route_target_node_or_None).
     """
     t_hashes = set(transition.get("hashes", {}).values())
-    scope_hashes = set(scope.get("hashes", []))
-    if not scope_hashes:           # empty scope = node engages nothing
-        return False
-    return bool(t_hashes & scope_hashes)
+    own = set(scope.get("hashes", []))
+    if own & t_hashes:
+        return ScopeMatch.MATCH, None
+    routes = scope.get("routes_to", {}) or {}
+    touched = t_hashes & set(routes.keys())
+    if touched:
+        # Deterministic pick of the first touched route target.
+        target = routes[sorted(touched)[0]]
+        return ScopeMatch.TOUCH, target
+    return ScopeMatch.NONE, None
+
+
+def _in_scope(transition: dict, scope: dict) -> bool:
+    """Backwards-compatible boolean: True only on full MATCH (§13)."""
+    return classify_scope(transition, scope)[0] is ScopeMatch.MATCH
 
 
 # --------------------------------------------------------------------------- #
@@ -246,3 +268,50 @@ def pn006_receipt(transition: dict, scope: dict,
                           detail="cannot continue chain without receipt id")
     return NodeOutput("PN-006", Engagement.BIND,
                       field_path="result.receipt_id", value=rid)
+
+
+# --------------------------------------------------------------------------- #
+# Routing front-gate (STCM §14 Reroute, §15 Hash-Synergistic Routing,
+# §16 Non-Ignored Path Principle).
+#
+# This sits BEFORE a node's own evaluation. It classifies the transition against
+# the node's scope and produces the routing-level engagement when the node is
+# not the activation owner:
+#
+#   NONE  -> IGNORE   (no receipt; not this node's concern)
+#   TOUCH -> REROUTE  (another node owns it; receipt may be required) or
+#                      ESCALATE (touched but routing equation cannot resolve a path)
+#   MATCH -> None     (caller proceeds to the node's own BIND/REFUSE logic)
+#
+# route_possible = hash_match AND receipt_sufficient AND transition_allowed (§16)
+# --------------------------------------------------------------------------- #
+def route_gate(node_id: str, transition: dict, scope: dict) -> NodeOutput | None:
+    match, target = classify_scope(transition, scope)
+
+    if match is ScopeMatch.NONE:
+        return NodeOutput(node_id, Engagement.IGNORE)
+
+    if match is ScopeMatch.MATCH:
+        return None  # caller runs the node's own logic
+
+    # TOUCH: another node is responsible. Apply the routing equation (§16).
+    receipts = transition.get("incoming_receipts") or {}
+    receipt_sufficient = bool(receipts.get("complete"))
+    rule = transition.get("transition_rule") or {}
+    transition_allowed = rule.get("allows") is True
+
+    # route_possible requires a known target AND a sufficient receipt AND an
+    # allowed transition. If the target is unknown or the equation fails on a
+    # part this node cannot resolve, the disposition is ESCALATE, not REROUTE.
+    if target is None:
+        return NodeOutput(node_id, Engagement.ESCALATE,
+                          reason_code="NO_ROUTE_TARGET",
+                          detail="scope touched but no routes_to target")
+    if not (receipt_sufficient and transition_allowed):
+        return NodeOutput(node_id, Engagement.ESCALATE,
+                          reason_code="ROUTE_EQUATION_FAILED",
+                          detail=f"receipt_sufficient={receipt_sufficient} "
+                                 f"transition_allowed={transition_allowed}")
+
+    return NodeOutput(node_id, Engagement.REROUTE, route_to=target,
+                      detail=f"responsibility routes to {target}")

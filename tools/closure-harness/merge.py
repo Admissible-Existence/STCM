@@ -60,6 +60,8 @@ def merge_observations(transition: dict,
     activated = [o.node_id for o in outputs if o.engagement is Engagement.BIND]
     refused = [o.node_id for o in outputs if o.engagement is Engagement.REFUSE]
     ignored = [o.node_id for o in outputs if o.engagement is Engagement.IGNORE]
+    routed = [o.node_id for o in outputs if o.engagement is Engagement.REROUTE]
+    escalated = [o.node_id for o in outputs if o.engagement is Engagement.ESCALATE]
 
     # --- related ---
     if not _same_transition(transition, outputs):
@@ -101,6 +103,8 @@ def merge_observations(transition: dict,
             "activated_nodes": activated,
             "ignored_nodes_count": len(ignored),
             "refused_nodes": refused,
+            "routed_nodes": routed,
+            "escalated_nodes": escalated,
             "required_nodes": sorted(required_node_ids),
         },
     }

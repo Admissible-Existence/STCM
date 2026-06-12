@@ -26,6 +26,7 @@ from composed_fixtures import composed_fixtures
 from compose import compose_record
 from merge_fixtures import merge_fixtures, _run_nodes
 from merge import merge_observations
+from routing_fixtures import routing_fixtures
 
 POLICY_PATH = Path(__file__).parent / "completeness_policy.yaml"
 
@@ -117,16 +118,40 @@ def run_merge_layer(policy):
     return results, unexpected
 
 
+def run_routing_layer():
+    """Routing front-gate: ignore / reroute / escalate (STCM §14-16)."""
+    results, unexpected = [], 0
+    for fx in routing_fixtures():
+        out = fx["call"]()
+        got = None if out is None else out.engagement
+        ok = got == fx["expect"]
+        if ok and out is not None and "expect_route_to" in fx:
+            ok = out.route_to == fx["expect_route_to"]
+        if ok and out is not None and "expect_reason" in fx:
+            ok = out.reason_code == fx["expect_reason"]
+        unexpected += 0 if ok else 1
+        results.append({"fixture": fx["name"], "stage": fx["stage"],
+                        "got": got.value if got else "PROCEED",
+                        "route_to": getattr(out, "route_to", None) if out else None,
+                        "reason": getattr(out, "reason_code", None) if out else None,
+                        "match": ok})
+    return results, unexpected
+
+
 def main() -> int:
     policy = yaml.safe_load(POLICY_PATH.read_text())
     node_res, node_unexp = run_node_layer()
     comp_res, comp_unexp = run_composed_layer(policy)
+    route_res, route_unexp = run_routing_layer()
     merge_res, merge_unexp = run_merge_layer(policy)
     clos_res, clos_unexp = run_closure_layer(policy)
-    total_unexp = node_unexp + comp_unexp + merge_unexp + clos_unexp
+    total_unexp = (node_unexp + comp_unexp + route_unexp
+                   + merge_unexp + clos_unexp)
 
     node_matrix = matrix_from(node_res, lambda r: r["got"] == "BIND")
     comp_matrix = matrix_from(comp_res, lambda r: r["verdict"] == "CLOSED")
+    route_matrix = matrix_from(
+        route_res, lambda r: r["got"] in ("PROCEED", "REROUTE"))
     merge_matrix = matrix_from(merge_res, lambda r: r["coherent"] is True)
     clos_matrix = matrix_from(clos_res, lambda r: r["got"] == "CLOSED")
 
@@ -136,6 +161,8 @@ def main() -> int:
                      "matrix": dict(sorted(node_matrix.items())), "details": node_res},
             "composed": {"run": len(comp_res), "unexpected": comp_unexp,
                          "matrix": dict(sorted(comp_matrix.items())), "details": comp_res},
+            "routing": {"run": len(route_res), "unexpected": route_unexp,
+                        "matrix": dict(sorted(route_matrix.items())), "details": route_res},
             "merge": {"run": len(merge_res), "unexpected": merge_unexp,
                       "matrix": dict(sorted(merge_matrix.items())), "details": merge_res},
             "closure": {"run": len(clos_res), "unexpected": clos_unexp,
@@ -155,6 +182,7 @@ def main() -> int:
 
     dump("NODE LAYER (each PN in isolation)", node_matrix, node_unexp)
     dump("COMPOSED LAYER (transition -> 6 nodes -> closure)", comp_matrix, comp_unexp)
+    dump("ROUTING LAYER (ignore / reroute / escalate)", route_matrix, route_unexp)
     dump("MERGE LAYER (multi-node -> coherent receipt -> closure)", merge_matrix, merge_unexp)
     dump("CLOSURE LAYER (predicate regression)", clos_matrix, clos_unexp)
     print(f"\n  TOTAL unexpected: {total_unexp} "
