@@ -1,0 +1,30 @@
+validation_promotion:
+  id: stcm_v0_6_validated_draft_candidate
+  boundary: stcm_v0_6
+  previous_status: pending_artifact_confirmation
+  promoted_status: validated_draft_candidate
+
+basis:
+  full_blank_task_run_reported_green: true
+  row_count: 25600
+  unexpected: 0
+  saturated: true
+  artifact_capture_validated: true
+
+required_reports:
+  - reports/stcm_v0_6_portability_saturation.json
+  - reports/stcm_v0_6_artifact_capture_status.json
+
+correction_record:
+  path: reports/stcm_v0_6_row_count_correction.yaml
+  commit: 5819bfef52b24442220279a833d59fee6b87a9bb
+
+implementation_commits:
+  artifact_capture_check_v2_py: 4dbe9280bb1da3b8243659d9a77873a897b9e111
+  task_registry_yaml: dff8c27296d67ec4c4d53a3a6d6675ac4793f30b
+  closure_harness_log_reduction: a116ad0a5fff80ac1554ba8d739ec6dc0014b525
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_open_all_repositories_to_factory: false
+  may_bypass_target_declaration: false
