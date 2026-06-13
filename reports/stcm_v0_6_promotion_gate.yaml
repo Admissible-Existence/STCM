@@ -1,0 +1,49 @@
+promotion_gate:
+  id: stcm_v0_6_validated_draft_candidate_gate
+  boundary: stcm_v0_6
+  current_record_status: pending_artifact_confirmation
+  target_record_status: validated_draft_candidate
+
+required_reports:
+  saturation_report:
+    path: reports/stcm_v0_6_portability_saturation.json
+    required:
+      stage: stcm_v0_6_portability_saturation
+      boundary: stcm_v0_6
+      row_count: 102400
+      unexpected: 0
+      saturated: true
+      boundary_status: validated_draft_candidate
+  artifact_capture_status:
+    path: reports/stcm_v0_6_artifact_capture_status.json
+    required:
+      stage: stcm_v0_6_artifact_capture_check
+      validated: true
+      status: validated_draft_candidate
+
+promotion_conditions:
+  - saturation_report_present
+  - artifact_capture_status_present
+  - artifact_capture_status_validated_true
+  - no_unexpected_rows
+  - row_count_matches_102400
+  - boundary_status_is_validated_draft_candidate
+
+promotion_effects:
+  update_validation_record:
+    path: docs/STCM_V0_6_VALIDATION_RECORD.md
+    set_record_status: validated_draft_candidate
+  update_factory_addendum:
+    repo: Admissible-Existence/ae-validation-factory
+    path: boundaries/stcm_v0_6_conflict_posture_addendum.yaml
+    set_status: validated_draft_candidate
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_open_all_repositories_to_factory: false
+  may_bypass_target_declaration: false
+
+source_basis:
+  artifact_capture_check_py: 03b0001c22893db52b9258ac8f25dd2534632c63
+  validation_record: e516595408bad32425298a8ce4ef044613e7df11
+  task_registry_yaml: 50038db2e0239ec6c4feab3defebd94a80dd8352
