@@ -1,0 +1,38 @@
+full_registry_run:
+  id: stcm_v0_7_full_registry_run
+  boundary: stcm_v0_7
+  status: full_registry_green
+  workflow: core-lite-intake
+  task_id: blank
+
+basis:
+  user_reported_full_blank_task_run_green: true
+  artifact_count: 1
+  artifact_downloaded_by_user: true
+
+validated_surfaces:
+  adoption_handshake:
+    expected_report: reports/stcm_v0_7_adoption_handshake.json
+    row_count: 96
+    unexpected: 0
+    saturated: true
+  receiver_decision_receipt:
+    expected_report: reports/stcm_v0_7_receiver_decision_receipt_check.json
+    row_count: 8
+    unexpected: 0
+    saturated: true
+
+registry:
+  path: tools/task_registry.yaml
+  commit: 578da64524e2967fd4f3c337b9a44e36cab7c8e2
+
+artifact_expectation:
+  artifact_name: core-lite-intake-reports
+  report_paths:
+    - reports/stcm_v0_7_adoption_handshake.json
+    - reports/stcm_v0_7_receiver_decision_receipt_check.json
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
