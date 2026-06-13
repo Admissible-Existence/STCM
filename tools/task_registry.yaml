@@ -13,12 +13,26 @@ tasks:
     fail_on_nonzero_exit: true
     description: >
       Decides STCM conservation-record closure as a computed predicate across
-      eight layers: each Prime Node (PN-001..006) in isolation, the composed
+      nine layers: each Prime Node (PN-001..006) in isolation, the composed
       pipeline, the routing front-gate (§14-16), the routed-hop integration
       (§15-16), multi-node coherent-recognition merge (§19) with a full §20
       node_activation block, sequential receipt lineage (v0.4), the governed
       append-only receipt store with conflict-resolution policy (v0.5:
-      store->lineage->conflict->closure->update, history-preserving), and the
+      store->lineage->conflict->closure->update, history-preserving), the
+      portable receipt authority predicate surface (v0.6), and the
       closure-predicate regression. Reports a coverage matrix per layer.
       Terminates on saturation, not on a watched checkmark. Exit 0 = saturated;
       exit 1 = unexpected verdict.
+
+  - id: stcm-v0-6-portability-predicate
+    kind: validator
+    entry: tools/closure-harness/portability_predicate_check.py
+    runtime: python3
+    deps: []
+    fail_on_nonzero_exit: true
+    description: >
+      Saturates the STCM v0.6 portable receipt authority predicate surface by
+      deriving all fixture rows from portability_fixtures.py, evaluating each
+      row through portability.evaluate_portability(), and emitting both the
+      detailed predicate report and compact saturation record. This is a
+      registered task under core-lite-intake, not a separate workflow.
