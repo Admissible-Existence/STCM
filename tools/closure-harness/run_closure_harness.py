@@ -243,7 +243,7 @@ def run_portability_layer():
             "source_declared": row["source_declared"],
             "target_declared": row["target_declared"],
             "receipt_posture": row["receipt_posture"],
-            "conflict_open": row["conflict_open"],
+            "conflict_posture": row["conflict_posture"],
             "deposit_posture": row["deposit_posture"],
             "hidden_dependency": row["hidden_dependency"],
             "lineage_continuous": row["lineage_continuous"],
@@ -282,10 +282,8 @@ def main() -> int:
 
     node_matrix = matrix_from(node_res, lambda r: r["got"] == "BIND")
     comp_matrix = matrix_from(comp_res, lambda r: r["verdict"] == "CLOSED")
-    route_matrix = matrix_from(
-        route_res, lambda r: r["got"] in ("PROCEED", "REROUTE"))
-    hop_matrix = matrix_from(
-        hop_res, lambda r: r["routed"] and r["matched"] and r["closed"])
+    route_matrix = matrix_from(route_res, lambda r: r["got"] in ("PROCEED", "REROUTE"))
+    hop_matrix = matrix_from(hop_res, lambda r: r["routed"] and r["matched"] and r["closed"])
     merge_matrix = matrix_from(merge_res, lambda r: r["coherent"] is True)
     lin_matrix = matrix_from(lin_res, lambda r: r["lineage"] == "BOUND" and r["closed"])
     store_matrix = matrix_from(store_res, lambda r: r["closed"] is True)
@@ -294,24 +292,15 @@ def main() -> int:
 
     report = {
         "layers": {
-            "node": {"run": len(node_res), "unexpected": node_unexp,
-                     "matrix": dict(sorted(node_matrix.items())), "details": node_res},
-            "composed": {"run": len(comp_res), "unexpected": comp_unexp,
-                         "matrix": dict(sorted(comp_matrix.items())), "details": comp_res},
-            "routing": {"run": len(route_res), "unexpected": route_unexp,
-                        "matrix": dict(sorted(route_matrix.items())), "details": route_res},
-            "routed_hop": {"run": len(hop_res), "unexpected": hop_unexp,
-                           "matrix": dict(sorted(hop_matrix.items())), "details": hop_res},
-            "merge": {"run": len(merge_res), "unexpected": merge_unexp,
-                      "matrix": dict(sorted(merge_matrix.items())), "details": merge_res},
-            "lineage": {"run": len(lin_res), "unexpected": lin_unexp,
-                        "matrix": dict(sorted(lin_matrix.items())), "details": lin_res},
-            "store": {"run": len(store_res), "unexpected": store_unexp,
-                      "matrix": dict(sorted(store_matrix.items())), "details": store_res},
-            "portability": {"run": len(port_res), "unexpected": port_unexp,
-                            "matrix": dict(sorted(port_matrix.items())), "details": port_res},
-            "closure": {"run": len(clos_res), "unexpected": clos_unexp,
-                        "matrix": dict(sorted(clos_matrix.items())), "details": clos_res},
+            "node": {"run": len(node_res), "unexpected": node_unexp, "matrix": dict(sorted(node_matrix.items())), "details": node_res},
+            "composed": {"run": len(comp_res), "unexpected": comp_unexp, "matrix": dict(sorted(comp_matrix.items())), "details": comp_res},
+            "routing": {"run": len(route_res), "unexpected": route_unexp, "matrix": dict(sorted(route_matrix.items())), "details": route_res},
+            "routed_hop": {"run": len(hop_res), "unexpected": hop_unexp, "matrix": dict(sorted(hop_matrix.items())), "details": hop_res},
+            "merge": {"run": len(merge_res), "unexpected": merge_unexp, "matrix": dict(sorted(merge_matrix.items())), "details": merge_res},
+            "lineage": {"run": len(lin_res), "unexpected": lin_unexp, "matrix": dict(sorted(lin_matrix.items())), "details": lin_res},
+            "store": {"run": len(store_res), "unexpected": store_unexp, "matrix": dict(sorted(store_matrix.items())), "details": store_res},
+            "portability": {"run": len(port_res), "unexpected": port_unexp, "matrix": dict(sorted(port_matrix.items())), "details": port_res},
+            "closure": {"run": len(clos_res), "unexpected": clos_unexp, "matrix": dict(sorted(clos_matrix.items())), "details": clos_res},
         },
         "total_unexpected": total_unexp,
         "saturated": total_unexp == 0,
