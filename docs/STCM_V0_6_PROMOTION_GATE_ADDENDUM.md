@@ -31,6 +31,16 @@ boundary_status: validated_draft_candidate
 artifact_capture_validated: true
 ```
 
+## Artifact upload correction
+
+```text
+core-lite-intake.yml now uploads:
+  reports/**/*.json
+  tools/closure-harness/reports/**/*.json
+```
+
+This correction is required because the v0.6 predicate emits root-level `reports/*.json` files.
+
 ## Non-effects
 
 ```text
@@ -46,4 +56,5 @@ artifact_capture_check.py: 03b0001c22893db52b9258ac8f25dd2534632c63
 task_registry.yaml: 50038db2e0239ec6c4feab3defebd94a80dd8352
 promotion_gate.yaml: 47d8540b64c0a1e450b92c36df547668a5118658
 validation_record: e516595408bad32425298a8ce4ef044613e7df11
+core-lite-intake.yml: ef7cf9fc30e1dc7c6dfb4fd7317e1a6dfece4b1c
 ```
