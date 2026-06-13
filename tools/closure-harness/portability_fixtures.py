@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """portability_fixtures.py - STCM v0.6 fixture family.
 
-Covers the first two v0.6 vectors:
-- hidden dependency refusal
-- authority rebind
+Covers early v0.6 portability vectors and derives expected outcomes from
+the portability predicate module.
 """
 
 from __future__ import annotations
@@ -11,6 +10,8 @@ from __future__ import annotations
 import itertools
 import json
 from pathlib import Path
+
+from portability import PortabilityInput, evaluate_portability
 
 
 DIMENSIONS = {
@@ -26,29 +27,8 @@ DIMENSIONS = {
 
 
 def expected(row: dict) -> str:
-    if not row["source_declared"]:
-        return "SOURCE_NOT_DECLARED"
-    if not row["target_declared"]:
-        return "TARGET_NOT_DECLARED"
-    if not row["receipt_current"]:
-        return "RECEIPT_NOT_CURRENT"
-    if row["conflict_open"]:
-        return "CONFLICT_OPEN"
-    if not row["deposit_allowed"]:
-        return "DEPOSIT_NOT_ALLOWED"
-    if row["hidden_dependency"]:
-        return "HIDDEN_DEPENDENCY"
-    if row["authority_class"] == "refused":
-        return "AUTHORITY_NOT_PORTABLE"
-    if row["authority_class"] == "source_bound":
-        return "AUTHORITY_NOT_PORTABLE"
-    if row["authority_class"] == "evidence_portable" and not row["authority_rebound"]:
-        return "AUTHORITY_REBIND_REQUIRED"
-    if row["authority_class"] == "authority_portable":
-        return "PORTABLE_PENDING_BOUNDARY"
-    if row["authority_class"] == "evidence_portable" and row["authority_rebound"]:
-        return "PORTABLE_PENDING_BOUNDARY"
-    return "UNCLASSIFIED"
+    inp = PortabilityInput(**{k: row[k] for k in DIMENSIONS})
+    return evaluate_portability(inp).outcome
 
 
 def build_rows() -> list[dict]:
@@ -56,7 +36,11 @@ def build_rows() -> list[dict]:
     rows = []
     for values in itertools.product(*(DIMENSIONS[k] for k in keys)):
         row = dict(zip(keys, values))
-        row["expected"] = expected(row)
+        decision = evaluate_portability(PortabilityInput(**row))
+        row["expected"] = decision.outcome
+        row["portable_candidate"] = decision.portable_candidate
+        row["cross_repo_valid"] = decision.cross_repo_valid
+        row["reason"] = decision.reason
         row["boundary"] = "stcm_v0_6"
         row["boundary_status"] = "draft"
         rows.append(row)
