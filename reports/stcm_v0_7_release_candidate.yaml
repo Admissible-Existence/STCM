@@ -1,0 +1,44 @@
+release_candidate:
+  id: stcm_v0_7_release_candidate
+  boundary: stcm_v0_7
+  status: release_candidate
+  purpose: receiving_repo_adoption_handshake
+
+basis:
+  boundary_index:
+    path: reports/stcm_v0_7_boundary_index.yaml
+    commit: df1f6af0ae55252c0510f90a975333adfea3a8c2
+    status: full_registry_green
+  full_registry_run:
+    path: reports/stcm_v0_7_full_registry_run.yaml
+    commit: d4acee13f25be18bb536ed70775f38300ed35cf2
+    workflow: core-lite-intake
+    task_id: blank
+    artifact_count: 1
+    artifact_downloaded_by_user: true
+
+validated_surfaces:
+  adoption_handshake:
+    row_count: 96
+    unexpected: 0
+    saturated: true
+  receiver_decision_receipt:
+    row_count: 8
+    unexpected: 0
+    saturated: true
+
+release_scope:
+  includes_new_workflow: false
+  includes_predicate_expansion: false
+  includes_receiver_auto_open: false
+  includes_cross_repo_finality_claim: false
+
+candidate_rule:
+  may_be_released_as_next_minor_tag: true
+  suggested_tag: v0.5.0
+  suggested_title: STCM v0.7 Receiving-Repo Adoption Handshake
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
