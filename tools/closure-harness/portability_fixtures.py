@@ -34,8 +34,16 @@ DIMENSIONS = {
     ],
     "hidden_dependency": [True, False],
     "lineage_continuous": [True, False],
-    "authority_class": ["source_bound", "evidence_portable", "authority_portable", "refused"],
-    "authority_rebound": [True, False],
+    "authority_posture": [
+        "source_bound",
+        "evidence_only",
+        "delegated",
+        "rebound",
+        "portable_signed",
+        "expired",
+        "scope_mismatch",
+        "refused",
+    ],
 }
 
 
