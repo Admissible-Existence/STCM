@@ -2,17 +2,17 @@
 
 ## Status
 
-This document defines the next boundary after STCM v0.4 sequential receipt lineage passed green.
+This document records the green operational boundary after STCM v0.5 receipt store and conflict policy fixtures passed.
 
 v0.4 proved that a transition cannot become a valid next receipt basis merely by closing locally. It must also bind to the correct prior receipt and avoid stale, superseded, missing, malformed, or conflicting lineage posture.
 
-v0.5 asks the next operational question:
+v0.5 answers the next operational question:
 
 ```text
 Where does lineage truth come from, and how is conflict resolved without deleting history?
 ```
 
-The v0.4 lineage layer accepts `chain_head` and `known_successors` as supplied facts. v0.5 must define the governed source of those facts.
+The v0.4 lineage layer accepted `chain_head` and `known_successors` as supplied facts. v0.5 derives those facts from a governed receipt store.
 
 ---
 
@@ -31,11 +31,41 @@ The receipt store is not merely storage. It is the authority surface for lineage
 
 ---
 
+## Implemented harness order
+
+The current closure harness now evaluates eight layers:
+
+1. Node layer — each Prime Node tested in isolation.
+2. Composed layer — transition -> PN outputs -> conservation record -> closure.
+3. Routing layer — ignore / reroute / escalate front-gate behavior.
+4. Routed-hop layer — source reroutes -> recognized owner activates -> destination closes or governed non-closes.
+5. Merge layer — multi-node outputs merge into a coherent transition receipt only when required conditions hold.
+6. Lineage layer — prior -> current -> next continuity gate.
+7. Store layer — governed receipt store + conflict policy pipeline.
+8. Closure layer — direct closure-predicate regression.
+
+The v0.5 store pipeline executes this order:
+
+```text
+receipt store lookup
+-> lineage binding
+-> conflict policy check
+-> closure predicate
+-> next receipt basis
+-> receipt store update candidate
+```
+
+The store lookup and conflict policy check occur before closure can establish a new next basis.
+
+The store update candidate is produced only after closure succeeds.
+
+---
+
 ## Receipt store boundary
 
-The receipt store should be treated as a governed index over receipt facts, not as a free-form database.
+The receipt store is implemented as an append-only governed index over receipt facts.
 
-At minimum it must answer:
+It answers:
 
 ```text
 get_receipt(receipt_id)
@@ -46,13 +76,15 @@ get_conflicts(prior_receipt_id)
 get_resolution(conflict_id)
 ```
 
-These operations do not decide closure by themselves. They provide the facts that the lineage layer uses before closure.
+These operations do not decide closure by themselves. They provide the facts that the lineage and conflict-policy checks use before closure.
+
+The store has no delete operation.
 
 ---
 
-## Minimal receipt record
+## Implemented receipt record
 
-A v0.5 receipt record should preserve at least:
+The v0.5 receipt record preserves at least:
 
 ```text
 receipt.id
@@ -71,15 +103,22 @@ receipt.source_transition_id
 receipt.conservation_record_hash
 ```
 
-The store may later add signatures, authority records, external proof references, and cross-repository portability metadata, but the first boundary should keep the record small enough to test.
+It also exposes derived posture:
+
+```text
+valid_as_closed
+current_basis
+```
+
+A receipt is current basis only when it is closed, not superseded, not rejected by conflict policy, and not under an open conflict.
 
 ---
 
 ## Store-derived lineage
 
-v0.5 should stop relying only on caller-supplied `chain_head` and `known_successors` fixtures.
+v0.5 stops relying only on caller-supplied `chain_head` and `known_successors` fixtures.
 
-Instead, the harness should prove:
+The implemented pipeline derives:
 
 ```text
 receipt_store -> chain_head
@@ -88,9 +127,9 @@ receipt_store -> supersession facts
 receipt_store -> conflict facts
 ```
 
-Then the lineage gate should evaluate using facts retrieved from the store.
+The transition may still present a claimed prior receipt, but the store resolves that claim into store-authoritative receipt facts before lineage is evaluated.
 
-The transition may still present a claimed prior receipt, but the store decides whether that claim matches the governed chain state.
+The transition can no longer assert its own lineage truth.
 
 ---
 
@@ -100,9 +139,7 @@ Conflict is not merge.
 
 A conflict occurs when more than one plausible successor claims the same prior receipt at the same sequence position, or when receipt identity/hash facts disagree.
 
-A conflict policy must decide posture, not erase evidence.
-
-The first v0.5 policy should support these states:
+The implemented conflict states are:
 
 ```text
 OPEN
@@ -112,7 +149,11 @@ RESOLVED_REJECT_ALL
 ESCALATED
 ```
 
-Conflict resolution must never delete the losing receipts. It changes whether they are valid as future continuation bases.
+An open conflict blocks closure.
+
+A resolved conflict can accept one continuation without deleting the other receipts.
+
+Rejected or superseded receipts remain queryable, but they cannot serve as current future-continuation bases.
 
 ---
 
@@ -122,7 +163,7 @@ Supersession is not deletion.
 
 A superseded receipt remains historically valid for the time at which it closed. It is no longer current for future continuation.
 
-The store must preserve both facts:
+The store preserves both facts:
 
 ```text
 valid_as_closed: true
@@ -134,19 +175,20 @@ This allows audit history to remain intact while preventing stale continuation.
 
 ---
 
-## Required v0.5 fixtures
+## Implemented v0.5 fixtures
 
-The first v0.5 harness should prove at least these cases.
+The green store layer proves these cases.
 
 ### 1. Store returns current head
 
-Given a chain with receipts `R1 -> R2 -> R3`, the store returns `R3` as the current head.
+Given a chain with receipts `R1 -> R2 -> R3`, the store returns `R3` as the current head and permits a valid successor to close.
 
 Expected result:
 
 ```text
-store verdict: HEAD_FOUND
-lineage may evaluate against R3
+store head: R3
+lineage verdict: BOUND
+closure may proceed
 ```
 
 ### 2. Store detects stale prior
@@ -162,13 +204,12 @@ closure blocked
 
 ### 3. Store detects competing successors
 
-Two receipts claim the same prior receipt and same sequence index.
+Two receipts claim the same prior receipt and same sequence index under an open conflict.
 
 Expected result:
 
 ```text
 conflict status: OPEN
-lineage verdict: CONFLICT
 closure blocked
 ```
 
@@ -180,7 +221,7 @@ Expected result:
 
 ```text
 accepted receipt becomes current basis
-rejected competing receipts remain historical but not current
+rejected competing receipt remains historical but not current
 ```
 
 ### 5. Store supersedes old receipt without deleting it
@@ -202,8 +243,8 @@ A transition claims a receipt rejected by conflict policy as its prior basis.
 Expected result:
 
 ```text
-lineage verdict: STALE or CONFLICT
 closure blocked
+rejected prior cannot serve as current basis
 ```
 
 ### 7. Missing store receipt blocks continuation
@@ -230,31 +271,9 @@ future continuation restricted
 
 ---
 
-## Harness order after v0.5
+## What green means in v0.5
 
-The intended order becomes:
-
-```text
-scope/routing
--> node execution
--> merge/composition
--> receipt store lookup
--> lineage binding
--> conflict policy check
--> closure predicate
--> next receipt basis
--> receipt store update
-```
-
-The store lookup and conflict policy check must occur before closure can establish a new next basis.
-
-The store update must occur only after closure succeeds.
-
----
-
-## What green should mean in v0.5
-
-A green v0.5 run should mean:
+A green v0.5 run means:
 
 - chain head is derived from the receipt store;
 - known successors are derived from the receipt store;
@@ -269,9 +288,9 @@ A green v0.5 run should mean:
 
 ---
 
-## What v0.5 should not prove yet
+## What v0.5 does not prove yet
 
-A green v0.5 run does not need to prove:
+A green v0.5 run does not yet prove:
 
 - distributed consensus across remote stores;
 - cryptographic proof beyond deterministic fixture hashes;
@@ -285,6 +304,22 @@ Those remain later boundaries.
 
 ---
 
+## Next boundary
+
+The next clean boundary is portability.
+
+v0.5 proves that the store is the authority surface inside this harness. The next question is whether that store-derived admissibility posture can remain valid when receipts move across repositories, projects, or authority domains.
+
+The likely v0.6 boundary is:
+
+```text
+STCM v0.6 — Portable Receipt Authority and Cross-Repo Continuity
+```
+
+---
+
 ## Version boundary statement
 
 STCM v0.5 establishes that lineage truth must come from a governed receipt store, not merely from transition-provided claims. The store preserves history, identifies heads and successors, detects conflicts, supports supersession without deletion, and prevents rejected, stale, missing, or conflicting receipts from becoming future continuation bases.
+
+This is the first executable boundary for store-derived lineage truth and governed conflict posture.
