@@ -1,0 +1,32 @@
+row_count_correction:
+  id: stcm_v0_6_row_count_correction
+  boundary: stcm_v0_6
+  status: corrective_evidence
+
+correction:
+  previous_expected_row_count: 102400
+  corrected_expected_row_count: 25600
+  reason: current_fixture_cartesian_product
+
+fixture_product:
+  source_declared: 2
+  target_declared: 2
+  receipt_posture: 5
+  conflict_posture: 8
+  deposit_posture: 5
+  hidden_dependency: 2
+  lineage_continuous: 2
+  authority_posture: 8
+  total: 25600
+
+applies_to:
+  - reports/stcm_v0_6_promotion_gate.yaml
+  - reports/stcm_v0_6_artifact_capture_pending.yaml
+  - docs/STCM_V0_6_PROMOTION_GATE_ADDENDUM.md
+
+source_commits:
+  artifact_capture_check_v2_py: 4dbe9280bb1da3b8243659d9a77873a897b9e111
+  task_registry_yaml: dff8c27296d67ec4c4d53a3a6d6675ac4793f30b
+
+reported_run_status:
+  user_reported_full_blank_task_run_green: true
