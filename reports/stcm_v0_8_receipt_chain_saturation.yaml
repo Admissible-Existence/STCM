@@ -1,0 +1,41 @@
+receipt_chain_saturation:
+  id: stcm_v0_8_receipt_chain_saturation
+  boundary: stcm_v0_8
+  status: draft_saturated
+  task: stcm-v0-8-receipt-chain
+  workflow: core-lite-intake
+
+basis:
+  user_reported_task_run_green: true
+  generated_report: reports/stcm_v0_8_receipt_chain_check.json
+
+validated_surface:
+  row_count: 9
+  unexpected: 0
+  saturated: true
+
+active_files:
+  schema:
+    path: reports/stcm_v0_8_receipt_chain_schema.yaml
+    commit: 6bd53e986515429fe3e4cb02e66b6c868d6affa0
+  validator:
+    path: tools/closure-harness/receipt_chain.py
+    commit: c394d0f319b7f4915ff39d12d28351b41ec80098
+  fixtures:
+    path: tools/closure-harness/receipt_chain_fixtures.py
+    commit: c4471758565d834395d5b73a277eccbfa7f498d4
+  check:
+    path: tools/closure-harness/receipt_chain_check.py
+    commit: 3694087022e683a19eb0a6f848b02edd5ef528b6
+  registry:
+    path: tools/task_registry.yaml
+    commit: 24503c78abff4747b58d5069360d02b15e27b885
+
+temporary_fragment_removed:
+  path: tools/task_registry.d/stcm_v0_8_receipt_chain.yaml
+  commit: 7b7e2d2fa479411edbeaa5139f207189888e5a60
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
