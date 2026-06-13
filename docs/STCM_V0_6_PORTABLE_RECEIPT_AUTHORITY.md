@@ -11,6 +11,7 @@ This document begins STCM v0.6 by defining portability vectors surfaced by AE Va
 2. Authority rebind
 3. Cross-repo lineage continuity
 4. Deposit posture
+5. Receipt posture
 ```
 
 STCM v0.6 is not yet a completed portability proof.
@@ -31,17 +32,17 @@ When may a receipt generated under one repository boundary be accepted as valid 
 
 The answer cannot be based on platform visibility alone.
 
-A receipt is portable only if the authority, lineage, conflict posture, deposit posture, and current basis can be evaluated from declared records.
+A receipt is portable only if the authority, lineage, conflict posture, deposit posture, receipt posture, and current basis can be evaluated from declared records.
 
 ---
 
 ## Core claim
 
 ```text
-A cross-repo transition is admissible only when the accepting repository can independently evaluate the receipt basis, authority basis, lineage basis, deposit posture, and conflict posture of the incoming receipt.
+A cross-repo transition is admissible only when the accepting repository can independently evaluate the receipt basis, authority basis, lineage basis, deposit posture, receipt posture, and conflict posture of the incoming receipt.
 ```
 
-If any basis depends on undeclared state, local-only authority, stale receipts, unresolved conflict, broken lineage, technical-only access, or undeclared deposit posture, the transition must not be treated as cross-repo valid.
+If any basis depends on undeclared state, local-only authority, stale receipts, superseded receipts, missing receipts, conflict-linked receipts, unresolved conflict, broken lineage, technical-only access, or undeclared deposit posture, the transition must not be treated as cross-repo valid.
 
 ---
 
@@ -78,6 +79,10 @@ The condition in which the receipt lineage remains continuous when a receipt cro
 ### Deposit posture
 
 The declared acceptance posture of the target repository for incoming receipts, validation records, or references.
+
+### Receipt posture
+
+The status of the incoming receipt as current, missing, stale, superseded, or conflict-linked.
 
 ---
 
@@ -223,6 +228,40 @@ REFERENCE_ONLY_PENDING_BOUNDARY
 
 ---
 
+## Boundary vector 5 — Receipt posture
+
+An incoming receipt must be evaluated by posture before it can be considered portable.
+
+### Receipt posture classes
+
+```text
+current
+  Receipt is eligible for current-basis evaluation.
+
+missing
+  No receipt exists to evaluate.
+
+stale
+  Receipt exists but is not current.
+
+superseded
+  Receipt has been replaced by a later receipt.
+
+conflict_linked
+  Receipt is linked to unresolved or blocking conflict posture.
+```
+
+### Refusal outcomes
+
+```text
+MISSING_RECEIPT
+RECEIPT_STALE
+RECEIPT_SUPERSEDED
+RECEIPT_CONFLICT_LINKED
+```
+
+---
+
 ## Cross-repo admissibility predicate draft
 
 Let:
@@ -235,6 +274,7 @@ A  = authority basis
 L  = lineage basis
 C  = conflict posture
 D  = deposit posture
+P  = receipt posture
 H  = hidden dependency set
 ```
 
@@ -244,7 +284,7 @@ A receipt may be considered portability-eligible only if:
 S is declared
 T is declared
 R exists
-R is current
+P is current
 C is closed or non-blocking
 D allows incoming deposit or reference
 H is empty
@@ -262,7 +302,9 @@ If any required element fails, the receipt is not cross-repo valid.
 SOURCE_NOT_DECLARED
 TARGET_NOT_DECLARED
 MISSING_RECEIPT
-RECEIPT_NOT_CURRENT
+RECEIPT_STALE
+RECEIPT_SUPERSEDED
+RECEIPT_CONFLICT_LINKED
 CONFLICT_OPEN
 DEPOSIT_NOT_ALLOWED
 TECHNICAL_ACCESS_NOT_AUTHORITY
