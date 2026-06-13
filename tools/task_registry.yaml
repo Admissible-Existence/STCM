@@ -36,3 +36,15 @@ tasks:
       row through portability.evaluate_portability(), and emitting both the
       detailed predicate report and compact saturation record. This is a
       registered task under core-lite-intake, not a separate workflow.
+
+  - id: stcm-v0-6-artifact-capture-check
+    kind: validator
+    entry: tools/closure-harness/artifact_capture_check.py
+    runtime: python3
+    deps: []
+    fail_on_nonzero_exit: true
+    description: >
+      Validates the generated STCM v0.6 portability saturation report inside
+      the governed core-lite-intake workspace and emits a compact artifact
+      capture status report. This confirms the saturation fields before the
+      validation record may be promoted.
