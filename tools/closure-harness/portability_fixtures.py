@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""portability_fixtures.py - STCM v0.6 fixture family.
-
-Covers early v0.6 portability vectors and derives expected outcomes from
-the portability predicate module.
-"""
+"""portability_fixtures.py - STCM v0.6 fixture family."""
 
 from __future__ import annotations
 
@@ -24,7 +20,16 @@ DIMENSIONS = {
         "superseded",
         "conflict_linked",
     ],
-    "conflict_open": [True, False],
+    "conflict_posture": [
+        "none",
+        "non_blocking",
+        "open_blocking",
+        "under_review",
+        "resolved_accepted",
+        "resolved_rejected",
+        "superseded_by_resolution",
+        "unresolved_external",
+    ],
     "deposit_posture": [
         "declared_accept",
         "declared_reference_only",
