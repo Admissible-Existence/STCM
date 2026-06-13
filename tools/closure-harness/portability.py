@@ -18,6 +18,7 @@ class PortabilityInput:
     conflict_open: bool
     deposit_allowed: bool
     hidden_dependency: bool
+    lineage_continuous: bool
     authority_class: str
     authority_rebound: bool
 
@@ -55,6 +56,10 @@ def evaluate_portability(inp: PortabilityInput) -> PortabilityDecision:
         return PortabilityDecision(
             "HIDDEN_DEPENDENCY", False, False,
             "Required validation basis depends on undeclared state.")
+    if not inp.lineage_continuous:
+        return PortabilityDecision(
+            "LINEAGE_NOT_CONTINUOUS", False, False,
+            "Receipt lineage does not remain continuous across the repository boundary.")
 
     if inp.authority_class in {"refused", "source_bound"}:
         return PortabilityDecision(
