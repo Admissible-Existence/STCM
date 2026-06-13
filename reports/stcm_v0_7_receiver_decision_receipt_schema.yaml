@@ -1,0 +1,51 @@
+receiver_decision_receipt_schema:
+  id: stcm_v0_7_receiver_decision_receipt_schema
+  boundary: stcm_v0_7
+  status: schema_stub
+  purpose: record_how_a_receiving_repo_handled_a_portable_receipt
+
+required_fields:
+  receipt_id: string
+  source_repo: string
+  source_receipt_id: string
+  source_boundary: string
+  receiving_repo: string
+  receiving_boundary: stcm_v0_7
+  receiver_declared: boolean
+  portable_status: portable_or_reboundable_or_invalid
+  conflict_blocking: boolean
+  receiver_decision: adopt_or_rebind_or_reject_or_quarantine
+  outcome: adoption_outcome
+  adopted: boolean
+  reason: string
+  timestamp: string
+
+allowed_receiver_decisions:
+  - adopt
+  - rebind
+  - reject
+  - quarantine
+
+allowed_outcomes:
+  - ADOPTED
+  - REBOUND
+  - QUARANTINED
+  - REJECTED
+  - INSUFFICIENT_DECLARATION
+  - AUTHORITY_MISMATCH
+  - CONFLICT_BLOCKED
+
+emission_rule:
+  receiving_repo_emits_receipt_after_handshake: true
+  receipt_records_decision_not_source_authority: true
+  source_receipt_is_not_modified: true
+
+next_step:
+  add_receipt_schema_validator: true
+  add_new_workflow: false
+  expand_adoption_predicate: false
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
