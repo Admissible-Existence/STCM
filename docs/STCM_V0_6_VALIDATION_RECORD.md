@@ -70,6 +70,7 @@ It is not a final cross-repo validity claim.
 ## Source code basis
 
 ```text
+docs/STCM_V0_6_PORTABLE_RECEIPT_AUTHORITY.md
 tools/closure-harness/portability.py
 tools/closure-harness/portability_fixtures.py
 tools/closure-harness/portability_predicate_check.py
@@ -81,6 +82,7 @@ tools/task_registry.yaml
 ## Latest source commits
 
 ```text
+portable_receipt_authority.md: 0314c3737c213362059f3b451ab822d3ebe059c8
 portability.py: 250fc7b9baeeac0bc4315d2a2163e4130643db50
 portability_fixtures.py: fbb6cbbcf5127accf1a95dcfe1e03b017650ae9f
 run_closure_harness.py: 3b33f1b109241210d057b57216b877a8a0c1de00
