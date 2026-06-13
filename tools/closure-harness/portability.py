@@ -19,8 +19,7 @@ class PortabilityInput:
     deposit_posture: str
     hidden_dependency: bool
     lineage_continuous: bool
-    authority_class: str
-    authority_rebound: bool
+    authority_posture: str
 
 
 @dataclass(frozen=True)
@@ -77,17 +76,24 @@ def evaluate_portability(inp: PortabilityInput) -> PortabilityDecision:
             "LINEAGE_NOT_CONTINUOUS", False, False,
             "Receipt lineage does not remain continuous across the repository boundary.")
 
-    if inp.authority_class in {"refused", "source_bound"}:
+    if inp.authority_posture in {"refused", "source_bound", "evidence_only"}:
         return PortabilityDecision(
             "AUTHORITY_NOT_PORTABLE", False, False,
             "Authority cannot travel from source to target.")
-
-    if inp.authority_class == "evidence_portable" and not inp.authority_rebound:
+    if inp.authority_posture == "expired":
+        return PortabilityDecision(
+            "AUTHORITY_EXPIRED", False, False,
+            "Authority expired before target acceptance.")
+    if inp.authority_posture == "scope_mismatch":
+        return PortabilityDecision(
+            "AUTHORITY_SCOPE_MISMATCH", False, False,
+            "Authority does not cover the target transition scope.")
+    if inp.authority_posture == "delegated":
         return PortabilityDecision(
             "AUTHORITY_REBIND_REQUIRED", False, False,
-            "Evidence may travel, but target authority has not been rebound.")
+            "Delegated authority requires target-side rebind before current-basis use.")
 
-    if inp.authority_class in {"authority_portable", "evidence_portable"}:
+    if inp.authority_posture in {"rebound", "portable_signed"}:
         if inp.deposit_posture == "declared_reference_only":
             return PortabilityDecision(
                 "REFERENCE_ONLY_PENDING_BOUNDARY", True, False,
