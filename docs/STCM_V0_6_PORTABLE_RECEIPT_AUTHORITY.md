@@ -8,7 +8,7 @@ This document begins STCM v0.6 by defining portability vectors surfaced by AE Va
 
 ```text
 1. Hidden dependency refusal
-2. Authority rebind
+2. Authority posture and rebind
 3. Cross-repo lineage continuity
 4. Deposit posture
 5. Receipt posture
@@ -42,7 +42,7 @@ A receipt is portable only if the authority, lineage, conflict posture, deposit 
 A cross-repo transition is admissible only when the accepting repository can independently evaluate the receipt basis, authority basis, lineage basis, deposit posture, receipt posture, and conflict posture of the incoming receipt.
 ```
 
-If any basis depends on undeclared state, local-only authority, stale receipts, superseded receipts, missing receipts, conflict-linked receipts, unresolved conflict, broken lineage, technical-only access, or undeclared deposit posture, the transition must not be treated as cross-repo valid.
+If any basis depends on undeclared state, local-only authority, stale receipts, superseded receipts, missing receipts, conflict-linked receipts, unresolved conflict, broken lineage, technical-only access, expired authority, scope mismatch, or undeclared deposit posture, the transition must not be treated as cross-repo valid.
 
 ---
 
@@ -84,6 +84,10 @@ The declared acceptance posture of the target repository for incoming receipts, 
 
 The status of the incoming receipt as current, missing, stale, superseded, or conflict-linked.
 
+### Authority posture
+
+The status of the authority attached to, implied by, or required for the incoming receipt.
+
 ---
 
 ## Boundary vector 1 — Hidden dependency refusal
@@ -120,7 +124,7 @@ It may not treat the object as portable authority or current basis.
 
 ---
 
-## Boundary vector 2 — Authority rebind
+## Boundary vector 2 — Authority posture and rebind
 
 A receipt may carry evidence from a source repository, but it does not automatically carry authority into the target repository.
 
@@ -129,29 +133,44 @@ The target repository must decide what authority must be re-established locally.
 ### Rule
 
 ```text
-A portable receipt may become current basis in a target repository only after required authority is rebound under the target repository's declared authority posture.
+A portable receipt may become current basis in a target repository only when its authority posture is portable, rebound, or target-accepted within scope.
 ```
 
-### Rebind classes
+### Authority posture classes
 
 ```text
-source-bound
+source_bound
   Authority exists only in the source repository.
 
-evidence-portable
-  Evidence may travel, but authority must be re-established.
+evidence_only
+  Evidence may travel, but no authority travels with it.
 
-authority-portable
-  Authority may travel because it is explicitly receipt-bound and target-accepted.
+delegated
+  Authority has been delegated but still requires target-side rebind.
+
+rebound
+  Authority has been re-established in the target repository.
+
+portable_signed
+  Authority is explicitly signed, receipt-bound, and target-accepted.
+
+expired
+  Authority existed but is no longer valid.
+
+scope_mismatch
+  Authority does not cover the target transition scope.
 
 refused
   Authority cannot be evaluated or accepted by the target repository.
 ```
 
-### Refusal outcome
+### Refusal outcomes
 
 ```text
 AUTHORITY_NOT_PORTABLE
+AUTHORITY_EXPIRED
+AUTHORITY_SCOPE_MISMATCH
+AUTHORITY_REBIND_REQUIRED
 ```
 
 ### Pending acceptance outcome
@@ -270,7 +289,7 @@ Let:
 R  = incoming receipt
 S  = source repository
 T  = target repository
-A  = authority basis
+A  = authority posture
 L  = lineage basis
 C  = conflict posture
 D  = deposit posture
@@ -289,7 +308,7 @@ C is closed or non-blocking
 D allows incoming deposit or reference
 H is empty
 L remains continuous across S -> T
-A is portable or successfully rebound in T
+A is rebound or portable-signed
 ```
 
 If any required element fails, the receipt is not cross-repo valid.
@@ -311,6 +330,8 @@ TECHNICAL_ACCESS_NOT_AUTHORITY
 HIDDEN_DEPENDENCY
 LINEAGE_NOT_CONTINUOUS
 AUTHORITY_NOT_PORTABLE
+AUTHORITY_EXPIRED
+AUTHORITY_SCOPE_MISMATCH
 AUTHORITY_REBIND_REQUIRED
 REFERENCE_ONLY_PENDING_BOUNDARY
 PORTABLE_PENDING_BOUNDARY
