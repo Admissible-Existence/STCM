@@ -33,13 +33,13 @@ authority posture
 2 source states
 2 target states
 5 receipt postures
-2 conflict postures
+8 conflict postures
 5 deposit postures
 2 hidden dependency states
 2 lineage states
 8 authority postures
 
-row_count: 25600
+row_count: 102400
 ```
 
 ## Required saturation artifact
@@ -53,7 +53,7 @@ reports/stcm_v0_6_portability_saturation.json
 ```text
 stage: stcm_v0_6_portability_saturation
 boundary: stcm_v0_6
-row_count: 25600
+row_count: 102400
 unexpected: 0
 saturated: true
 boundary_status: validated_draft_candidate
@@ -74,15 +74,16 @@ tools/closure-harness/portability.py
 tools/closure-harness/portability_fixtures.py
 tools/closure-harness/portability_predicate_check.py
 tools/closure-harness/run_closure_harness.py
-.github/workflows/stcm-v0-6-portability.yml
+.github/workflows/core-lite-intake.yml
+tools/task_registry.yaml
 ```
 
 ## Latest source commits
 
 ```text
-portability.py: a8ee178b6713ec437fbe1921eb3f6e930c2cce14
-portability_fixtures.py: 4ca2bfe4d6cc259dfc316a706aff1dfe7ae24a30
-portability_predicate_check.py: 71d4f3690d20f0d9b641082e275ff64ad46517df
-run_closure_harness.py: af29c59666c4f681ff66c7db01549e2dd9c60bcd
-workflow: aacf971454f5e1f9739ffbe52b0ca8e2c4a89fb7
+portability.py: 250fc7b9baeeac0bc4315d2a2163e4130643db50
+portability_fixtures.py: fbb6cbbcf5127accf1a95dcfe1e03b017650ae9f
+run_closure_harness.py: 3b33f1b109241210d057b57216b877a8a0c1de00
+core-lite-intake.yml: 08a7ff589f8c556350696c9ac12ad78c0777c0e4
+task_registry.yaml: 38e1013cf7daf620455ef8cd15be8b019f4cb756
 ```
