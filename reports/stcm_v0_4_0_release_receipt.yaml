@@ -1,0 +1,33 @@
+release_receipt:
+  id: stcm_v0_4_0_release_receipt
+  release_tag: v0.4.0
+  release_status: published
+  target_commit: f91c9cebda75a554883c7d0563047f7bc6aee0cd
+  target_commit_short: f91c9ce
+  target_commit_message: Add STCM v0.6 boundary index
+
+boundary:
+  id: stcm_v0_6
+  release_role: portable_receipt_authority_boundary
+  status_at_release: validated_draft_candidate
+  boundary_index:
+    path: reports/stcm_v0_6_boundary_index.yaml
+    commit: f91c9cebda75a554883c7d0563047f7bc6aee0cd
+
+validated_basis:
+  row_count: 25600
+  unexpected: 0
+  saturated: true
+  artifact_capture_validated: true
+  full_blank_task_run_reported_green: true
+
+freeze_rule:
+  allow_new_v0_6_predicates: false
+  allow_scope_expansion: false
+  allow_correction_commits: true
+  next_boundary: stcm_v0_7
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_open_all_repositories_to_factory: false
+  may_bypass_target_declaration: false
