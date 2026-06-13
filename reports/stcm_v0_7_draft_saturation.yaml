@@ -1,0 +1,24 @@
+draft_saturation:
+  id: stcm_v0_7_draft_saturation
+  boundary: stcm_v0_7
+  status: draft_saturated
+  task: stcm-v0-7-adoption-handshake
+
+basis:
+  user_reported_task_run_green: true
+  expected_report: reports/stcm_v0_7_adoption_handshake.json
+  expected_row_count: 96
+  expected_unexpected: 0
+  expected_saturated: true
+
+implementation_commits:
+  spec: 1fc9cadeddd1c7462c9c24e4fd0134a77b29eb47
+  predicate: 69957c852a4a3af56d57b6dcec618f31aedb35cf
+  fixtures: 06f85e38d636e5f11cbd2cc6ae29a4768e0e91d0
+  check: 3b2eb723bc2e87ff6a18d9e52bc462322fbc34f9
+  registry: 59281ff3731e26c566a5cca7390163011da5c83c
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
