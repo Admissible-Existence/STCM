@@ -1,0 +1,30 @@
+run_mode_rule:
+  id: stcm_v0_6_run_mode_rule
+  boundary: stcm_v0_6
+  workflow: core-lite-intake
+  status: operational_rule
+
+full_validation:
+  task_id: ""
+  task_order:
+    - closure-harness
+    - stcm-v0-6-portability-predicate
+    - stcm-v0-6-artifact-capture-check
+
+standalone_restriction:
+  task: stcm-v0-6-artifact-capture-check
+  valid_only_if_existing_workspace_report: reports/stcm_v0_6_portability_saturation.json
+
+required_outputs:
+  - reports/stcm_v0_6_portability_saturation.json
+  - reports/stcm_v0_6_artifact_capture_status.json
+
+dispatch_basis:
+  file: tools/dispatch.py
+  blank_only_task_runs_registry_order: true
+  nonblank_only_task_runs_single_task: true
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_open_all_repositories_to_factory: false
+  may_bypass_target_declaration: false
