@@ -1,0 +1,57 @@
+receipt_chain_validator_design:
+  id: stcm_v0_8_receipt_chain_validator_design
+  boundary: stcm_v0_8
+  status: design_stub
+  purpose: validate_minimum_receipt_chain_before_new_predicate_surface
+
+validator_scope:
+  validate_required_fields: true
+  validate_allowed_chain_outcome: true
+  validate_source_receipt_link: true
+  validate_receiver_decision_receipt_link: true
+  validate_next_receipt_link: true
+  validate_chain_outcome_matches_receiver_decision: true
+  evaluate_final_cross_repo_validity: false
+
+required_fields:
+  - chain_id
+  - source_repo
+  - source_receipt_id
+  - source_boundary
+  - receiver_decision_receipt_id
+  - receiving_repo
+  - receiving_boundary
+  - next_receipt_id
+  - next_receipt_boundary
+  - chain_outcome
+  - chain_continuous
+  - reason
+  - timestamp
+
+receiver_decision_to_chain_outcome:
+  ADOPTED: CHAIN_ACCEPTED
+  REBOUND: CHAIN_REBOUND_REQUIRED
+  QUARANTINED: CHAIN_QUARANTINED
+  REJECTED: CHAIN_REJECTED
+  CONFLICT_BLOCKED: CHAIN_CONFLICT_BLOCKED
+
+fixture_plan:
+  valid_accepted_chain: true
+  valid_rebound_chain: true
+  valid_quarantined_chain: true
+  valid_rejected_chain: true
+  invalid_missing_source_receipt: true
+  invalid_missing_receiver_decision_receipt: true
+  invalid_missing_next_receipt: true
+  invalid_chain_outcome_mismatch: true
+  invalid_chain_not_continuous: true
+
+next_step:
+  add_executable_validator_in_small_file: true
+  add_fixture_file_after_validator: true
+  register_task_after_green_local_shape: true
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
