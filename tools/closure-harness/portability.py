@@ -14,7 +14,7 @@ from dataclasses import dataclass
 class PortabilityInput:
     source_declared: bool
     target_declared: bool
-    receipt_current: bool
+    receipt_posture: str
     conflict_open: bool
     deposit_posture: str
     hidden_dependency: bool
@@ -40,10 +40,22 @@ def evaluate_portability(inp: PortabilityInput) -> PortabilityDecision:
         return PortabilityDecision(
             "TARGET_NOT_DECLARED", False, False,
             "Target repository has not declared acceptance posture.")
-    if not inp.receipt_current:
+    if inp.receipt_posture == "missing":
         return PortabilityDecision(
-            "RECEIPT_NOT_CURRENT", False, False,
-            "Receipt is stale or superseded and cannot serve as current basis.")
+            "MISSING_RECEIPT", False, False,
+            "No receipt exists to evaluate as cross-repo basis.")
+    if inp.receipt_posture == "stale":
+        return PortabilityDecision(
+            "RECEIPT_STALE", False, False,
+            "Receipt is stale and cannot serve as current basis.")
+    if inp.receipt_posture == "superseded":
+        return PortabilityDecision(
+            "RECEIPT_SUPERSEDED", False, False,
+            "Receipt has been superseded and cannot serve as current basis.")
+    if inp.receipt_posture == "conflict_linked":
+        return PortabilityDecision(
+            "RECEIPT_CONFLICT_LINKED", False, False,
+            "Receipt is linked to an unresolved or blocking conflict posture.")
     if inp.conflict_open:
         return PortabilityDecision(
             "CONFLICT_OPEN", False, False,
