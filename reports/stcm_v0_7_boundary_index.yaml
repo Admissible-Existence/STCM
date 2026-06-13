@@ -1,0 +1,47 @@
+boundary_index:
+  id: stcm_v0_7_boundary_index
+  boundary: stcm_v0_7
+  status: draft_saturated
+  purpose: receiving_repo_adoption_handshake
+
+active_spec:
+  path: docs/STCM_V0_7_CROSS_REPO_ADOPTION_HANDSHAKE.md
+  commit: 1fc9cadeddd1c7462c9c24e4fd0134a77b29eb47
+
+active_implementation:
+  predicate:
+    path: tools/closure-harness/adoption.py
+    commit: 69957c852a4a3af56d57b6dcec618f31aedb35cf
+  fixtures:
+    path: tools/closure-harness/adoption_fixtures.py
+    commit: 06f85e38d636e5f11cbd2cc6ae29a4768e0e91d0
+  check:
+    path: tools/closure-harness/adoption_predicate_check.py
+    commit: 3b2eb723bc2e87ff6a18d9e52bc462322fbc34f9
+  registry:
+    path: tools/task_registry.yaml
+    commit: 59281ff3731e26c566a5cca7390163011da5c83c
+
+active_evidence:
+  draft_saturation:
+    path: reports/stcm_v0_7_draft_saturation.yaml
+    commit: d9216644e8706aa79bb4ea2cf4512e5b21d5779d
+  generated_report:
+    path: reports/stcm_v0_7_adoption_handshake.json
+
+validated_basis:
+  row_count: 96
+  unexpected: 0
+  saturated: true
+  task_run_reported_green: true
+
+scope_rule:
+  allow_new_v0_7_predicates: false
+  allow_scope_expansion: false
+  allow_correction_commits: true
+  next_action: receiving_repo_integration_design
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
