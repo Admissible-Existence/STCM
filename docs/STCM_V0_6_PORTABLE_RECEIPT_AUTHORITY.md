@@ -4,11 +4,12 @@
 
 Draft boundary.
 
-This document begins STCM v0.6 by defining two portability vectors surfaced by AE Validation Factory:
+This document begins STCM v0.6 by defining portability vectors surfaced by AE Validation Factory:
 
 ```text
 1. Hidden dependency refusal
 2. Authority rebind
+3. Cross-repo lineage continuity
 ```
 
 STCM v0.6 is not yet a completed portability proof.
@@ -39,7 +40,7 @@ A receipt is portable only if the authority, lineage, conflict posture, deposit 
 A cross-repo transition is admissible only when the accepting repository can independently evaluate the receipt basis, authority basis, lineage basis, and conflict posture of the incoming receipt.
 ```
 
-If any basis depends on undeclared state, local-only authority, stale receipts, unresolved conflict, or undeclared deposit posture, the transition must not be treated as cross-repo valid.
+If any basis depends on undeclared state, local-only authority, stale receipts, unresolved conflict, broken lineage, or undeclared deposit posture, the transition must not be treated as cross-repo valid.
 
 ---
 
@@ -68,6 +69,10 @@ A dependency required for validation that is not declared in the receipt, target
 ### Authority rebind
 
 The act of re-establishing authority in the accepting repository before an incoming receipt is allowed to become current basis for a target transition.
+
+### Cross-repo lineage continuity
+
+The condition in which the receipt lineage remains continuous when a receipt crosses from source repository to target repository.
 
 ---
 
@@ -149,6 +154,30 @@ This means the positive path is visible but not yet proven complete.
 
 ---
 
+## Boundary vector 3 — Cross-repo lineage continuity
+
+A receipt cannot become portable current basis if the accepting repository cannot evaluate continuity from the source receipt chain to the target receipt chain.
+
+### Rule
+
+```text
+If receipt lineage does not remain continuous across the source-to-target repository boundary, the target repository must refuse portability.
+```
+
+### Refusal outcome
+
+```text
+LINEAGE_NOT_CONTINUOUS
+```
+
+### Consequence
+
+The incoming receipt may be stored as observed evidence.
+
+It may not become current basis for a target transition.
+
+---
+
 ## Cross-repo admissibility predicate draft
 
 Let:
@@ -174,8 +203,8 @@ R is current
 C is closed or non-blocking
 D allows incoming deposit or reference
 H is empty
-A is portable or successfully rebound in T
 L remains continuous across S -> T
+A is portable or successfully rebound in T
 ```
 
 If any required element fails, the receipt is not cross-repo valid.
@@ -192,7 +221,9 @@ RECEIPT_NOT_CURRENT
 CONFLICT_OPEN
 DEPOSIT_NOT_ALLOWED
 HIDDEN_DEPENDENCY
+LINEAGE_NOT_CONTINUOUS
 AUTHORITY_NOT_PORTABLE
+AUTHORITY_REBIND_REQUIRED
 PORTABLE_PENDING_BOUNDARY
 ```
 
