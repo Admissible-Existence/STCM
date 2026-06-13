@@ -39,6 +39,7 @@ from lineage_fixtures import lineage_fixtures
 from lineage_gate import gated_close
 from store_fixtures import store_fixtures
 from store_pipeline import run_pipeline
+from portability import PortabilityInput, evaluate_portability
 from portability_fixtures import build_rows as portability_rows
 
 POLICY_PATH = Path(__file__).parent / "completeness_policy.yaml"
@@ -237,24 +238,27 @@ def run_store_layer(policy):
 
 def run_portability_layer():
     results, unexpected = [], 0
-    accepting = {"PORTABLE_PENDING_BOUNDARY"}
-    refusing = {
-        "SOURCE_NOT_DECLARED",
-        "TARGET_NOT_DECLARED",
-        "RECEIPT_NOT_CURRENT",
-        "CONFLICT_OPEN",
-        "DEPOSIT_NOT_ALLOWED",
-        "HIDDEN_DEPENDENCY",
-        "AUTHORITY_NOT_PORTABLE",
-        "AUTHORITY_REBIND_REQUIRED",
-    }
     for i, row in enumerate(portability_rows()):
-        outcome = row["expected"]
-        ok = outcome in accepting or outcome in refusing
+        inp = PortabilityInput(**{
+            "source_declared": row["source_declared"],
+            "target_declared": row["target_declared"],
+            "receipt_posture": row["receipt_posture"],
+            "conflict_open": row["conflict_open"],
+            "deposit_posture": row["deposit_posture"],
+            "hidden_dependency": row["hidden_dependency"],
+            "lineage_continuous": row["lineage_continuous"],
+            "authority_posture": row["authority_posture"],
+        })
+        decision = evaluate_portability(inp)
+        ok = decision.outcome == row["expected"]
         unexpected += 0 if ok else 1
         results.append({"fixture": f"portability_{i:04d}",
-                        "stage": outcome,
-                        "expected": outcome,
+                        "stage": decision.outcome,
+                        "expected": row["expected"],
+                        "got": decision.outcome,
+                        "portable_candidate": decision.portable_candidate,
+                        "cross_repo_valid": decision.cross_repo_valid,
+                        "reason": decision.reason,
                         "boundary": row["boundary"],
                         "boundary_status": row["boundary_status"],
                         "match": ok})
@@ -285,7 +289,7 @@ def main() -> int:
     merge_matrix = matrix_from(merge_res, lambda r: r["coherent"] is True)
     lin_matrix = matrix_from(lin_res, lambda r: r["lineage"] == "BOUND" and r["closed"])
     store_matrix = matrix_from(store_res, lambda r: r["closed"] is True)
-    port_matrix = matrix_from(port_res, lambda r: r["stage"] == "PORTABLE_PENDING_BOUNDARY")
+    port_matrix = matrix_from(port_res, lambda r: r["portable_candidate"] is True)
     clos_matrix = matrix_from(clos_res, lambda r: r["got"] == "CLOSED")
 
     report = {
