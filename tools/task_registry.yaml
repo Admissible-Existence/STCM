@@ -48,3 +48,14 @@ tasks:
       the governed core-lite-intake workspace and emits a compact artifact
       capture status report. This confirms the saturation fields before the
       validation record may be promoted.
+
+  - id: stcm-v0-7-adoption-handshake
+    kind: validator
+    entry: tools/closure-harness/adoption_predicate_check.py
+    runtime: python3
+    deps: []
+    fail_on_nonzero_exit: true
+    description: >
+      Saturates the STCM v0.7 receiving-repo adoption handshake predicate for
+      portable receipts. This is a registered task under core-lite-intake, not a
+      separate workflow.
