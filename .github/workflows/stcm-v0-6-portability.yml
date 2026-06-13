@@ -41,9 +41,11 @@ jobs:
       - name: Run portability predicate check
         run: python portability_predicate_check.py
 
-      - name: Upload portability report
+      - name: Upload portability reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: stcm-v0-6-portability-predicate-check
-          path: tools/closure-harness/reports/stcm_v0_6_portability_predicate_check.json
+          name: stcm-v0-6-portability-reports
+          path: |
+            tools/closure-harness/reports/stcm_v0_6_portability_predicate_check.json
+            tools/closure-harness/reports/stcm_v0_6_portability_saturation.json
