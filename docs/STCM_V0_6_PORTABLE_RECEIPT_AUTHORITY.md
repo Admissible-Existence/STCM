@@ -10,6 +10,7 @@ This document begins STCM v0.6 by defining portability vectors surfaced by AE Va
 1. Hidden dependency refusal
 2. Authority rebind
 3. Cross-repo lineage continuity
+4. Deposit posture
 ```
 
 STCM v0.6 is not yet a completed portability proof.
@@ -37,10 +38,10 @@ A receipt is portable only if the authority, lineage, conflict posture, deposit 
 ## Core claim
 
 ```text
-A cross-repo transition is admissible only when the accepting repository can independently evaluate the receipt basis, authority basis, lineage basis, and conflict posture of the incoming receipt.
+A cross-repo transition is admissible only when the accepting repository can independently evaluate the receipt basis, authority basis, lineage basis, deposit posture, and conflict posture of the incoming receipt.
 ```
 
-If any basis depends on undeclared state, local-only authority, stale receipts, unresolved conflict, broken lineage, or undeclared deposit posture, the transition must not be treated as cross-repo valid.
+If any basis depends on undeclared state, local-only authority, stale receipts, unresolved conflict, broken lineage, technical-only access, or undeclared deposit posture, the transition must not be treated as cross-repo valid.
 
 ---
 
@@ -73,6 +74,10 @@ The act of re-establishing authority in the accepting repository before an incom
 ### Cross-repo lineage continuity
 
 The condition in which the receipt lineage remains continuous when a receipt crosses from source repository to target repository.
+
+### Deposit posture
+
+The declared acceptance posture of the target repository for incoming receipts, validation records, or references.
 
 ---
 
@@ -178,6 +183,46 @@ It may not become current basis for a target transition.
 
 ---
 
+## Boundary vector 4 — Deposit posture
+
+Technical write access is not the same thing as admissible deposit authority.
+
+A target repository must declare whether incoming records may be accepted, referenced, refused, or treated as technical-only access.
+
+### Deposit posture classes
+
+```text
+declared_accept
+  Incoming validation records may be deposited under declared policy.
+
+declared_reference_only
+  Incoming records may be referenced, but not made current basis.
+
+missing_policy
+  No target deposit policy is declared.
+
+refuses_external
+  Target policy refuses external validation records.
+
+technical_only
+  A technical write path exists, but admissible deposit authority is not declared.
+```
+
+### Refusal outcomes
+
+```text
+DEPOSIT_NOT_ALLOWED
+TECHNICAL_ACCESS_NOT_AUTHORITY
+```
+
+### Reference-only outcome
+
+```text
+REFERENCE_ONLY_PENDING_BOUNDARY
+```
+
+---
+
 ## Cross-repo admissibility predicate draft
 
 Let:
@@ -220,10 +265,12 @@ MISSING_RECEIPT
 RECEIPT_NOT_CURRENT
 CONFLICT_OPEN
 DEPOSIT_NOT_ALLOWED
+TECHNICAL_ACCESS_NOT_AUTHORITY
 HIDDEN_DEPENDENCY
 LINEAGE_NOT_CONTINUOUS
 AUTHORITY_NOT_PORTABLE
 AUTHORITY_REBIND_REQUIRED
+REFERENCE_ONLY_PENDING_BOUNDARY
 PORTABLE_PENDING_BOUNDARY
 ```
 
