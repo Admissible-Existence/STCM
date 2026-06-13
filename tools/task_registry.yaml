@@ -39,7 +39,7 @@ tasks:
 
   - id: stcm-v0-6-artifact-capture-check
     kind: validator
-    entry: tools/closure-harness/artifact_capture_check.py
+    entry: tools/closure-harness/artifact_capture_check_v2.py
     runtime: python3
     deps: []
     fail_on_nonzero_exit: true
