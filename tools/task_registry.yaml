@@ -70,3 +70,13 @@ tasks:
       Validates the STCM v0.7 receiver decision receipt schema and confirms
       that receipt outcome and adopted state agree with the adoption handshake.
       This is a registered task under core-lite-intake, not a separate workflow.
+
+  - id: stcm-v0-8-receipt-chain
+    kind: validator
+    entry: tools/closure-harness/receipt_chain_check.py
+    runtime: python3
+    deps: []
+    fail_on_nonzero_exit: true
+    description: >
+      Validates the STCM v0.8 receipt-chain link surface without claiming final
+      cross-repo validity.
