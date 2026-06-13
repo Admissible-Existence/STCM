@@ -1,0 +1,47 @@
+planning_record:
+  id: stcm_v0_8_planning_record
+  boundary: stcm_v0_8
+  status: planned
+  purpose: receiving_repo_integration_receipt_chain
+
+starts_from:
+  previous_release:
+    tag: v0.5.0
+    boundary: stcm_v0_7
+    release_receipt:
+      path: reports/stcm_v0_5_0_release_receipt.yaml
+      commit: 36b1e52dae5ff72af7b3f4c83facab6f3fe1f5b5
+
+problem_statement:
+  v0_7_defined: receiving_repo_adoption_handshake
+  v0_7_did_not_define: durable_multi_repo_receipt_chain
+  v0_8_will_define: how_source_receipt_receiver_decision_and_next_receipt_chain_together
+
+minimal_scope:
+  inputs:
+    - source_receipt
+    - receiver_decision_receipt
+    - receiving_repo_policy
+    - resulting_next_receipt
+  required_links:
+    - source_receipt_id
+    - receiver_decision_receipt_id
+    - next_receipt_id
+  allowed_chain_outcomes:
+    - CHAIN_ACCEPTED
+    - CHAIN_REBOUND_REQUIRED
+    - CHAIN_QUARANTINED
+    - CHAIN_REJECTED
+    - CHAIN_BROKEN
+    - CHAIN_CONFLICT_BLOCKED
+
+first_implementation_step:
+  create_chain_schema: true
+  create_new_predicate_now: false
+  add_new_workflow: false
+  alter_v0_7: false
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
