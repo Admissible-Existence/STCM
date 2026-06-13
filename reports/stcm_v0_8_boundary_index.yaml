@@ -1,0 +1,71 @@
+boundary_index:
+  id: stcm_v0_8_boundary_index
+  boundary: stcm_v0_8
+  status: full_registry_saturated
+  purpose: receiving_repo_integration_receipt_chain
+
+starts_from:
+  previous_release:
+    tag: v0.5.0
+    boundary: stcm_v0_7
+    release_receipt:
+      path: reports/stcm_v0_5_0_release_receipt.yaml
+      commit: 36b1e52dae5ff72af7b3f4c83facab6f3fe1f5b5
+
+active_planning:
+  path: reports/stcm_v0_8_planning_record.yaml
+  commit: 6ec7cda9881ea2c5e4db8bc2e4029fcd56a822ca
+
+active_schema:
+  receipt_chain_schema:
+    path: reports/stcm_v0_8_receipt_chain_schema.yaml
+    commit: 6bd53e986515429fe3e4cb02e66b6c868d6affa0
+
+active_implementation:
+  validator:
+    path: tools/closure-harness/receipt_chain.py
+    commit: c394d0f319b7f4915ff39d12d28351b41ec80098
+  fixtures:
+    path: tools/closure-harness/receipt_chain_fixtures.py
+    commit: c4471758565d834395d5b73a277eccbfa7f498d4
+  check:
+    path: tools/closure-harness/receipt_chain_check.py
+    commit: 3694087022e683a19eb0a6f848b02edd5ef528b6
+  registry:
+    path: tools/task_registry.yaml
+    commit: 24503c78abff4747b58d5069360d02b15e27b885
+
+active_evidence:
+  single_task_saturation:
+    path: reports/stcm_v0_8_receipt_chain_saturation.yaml
+    commit: a81e6e9be413ae0db12eff301cd03a0b9a23085f
+    task: stcm-v0-8-receipt-chain
+    row_count: 9
+    unexpected: 0
+    saturated: true
+  full_registry_saturation:
+    path: reports/stcm_v0_8_full_registry_saturation.yaml
+    commit: 760e3c8108882e7bca05764081d5a90a16e21bbf
+    workflow: core-lite-intake
+    task_id: blank
+    status: full_registry_saturated
+
+validated_basis:
+  v0_8_receipt_chain:
+    row_count: 9
+    unexpected: 0
+    saturated: true
+  full_registry:
+    task_id_blank: true
+    run_reported_green: true
+
+scope_rule:
+  allow_new_v0_8_predicates: false
+  allow_scope_expansion: false
+  allow_correction_commits: true
+  next_action: stcm_v0_8_release_candidate_record
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
