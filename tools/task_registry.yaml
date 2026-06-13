@@ -13,11 +13,12 @@ tasks:
     fail_on_nonzero_exit: true
     description: >
       Decides STCM conservation-record closure as a computed predicate across
-      seven layers: each Prime Node (PN-001..006) in isolation, the composed
-      transition->nodes->record->closure pipeline, the routing front-gate
-      (ignore/reroute/escalate, §14-16), the routed-hop integration (§15-16),
-      multi-node coherent-recognition merge (§19) with a full §20 node_activation
-      block, sequential receipt lineage (v0.4: prior->current->next continuity,
-      lineage gates closure), and the closure-predicate regression. Reports a
-      coverage matrix per layer. Terminates on saturation, not on a watched
-      checkmark. Exit 0 = saturated; exit 1 = unexpected verdict.
+      eight layers: each Prime Node (PN-001..006) in isolation, the composed
+      pipeline, the routing front-gate (§14-16), the routed-hop integration
+      (§15-16), multi-node coherent-recognition merge (§19) with a full §20
+      node_activation block, sequential receipt lineage (v0.4), the governed
+      append-only receipt store with conflict-resolution policy (v0.5:
+      store->lineage->conflict->closure->update, history-preserving), and the
+      closure-predicate regression. Reports a coverage matrix per layer.
+      Terminates on saturation, not on a watched checkmark. Exit 0 = saturated;
+      exit 1 = unexpected verdict.
