@@ -1,0 +1,48 @@
+full_registry_saturation:
+  id: stcm_v0_8_full_registry_saturation
+  boundary: stcm_v0_8
+  status: full_registry_saturated
+  workflow: core-lite-intake
+  task_id: blank
+
+basis:
+  user_reported_full_blank_task_run_green: true
+
+expected_tasks:
+  - closure-harness
+  - stcm-v0-6-portability-predicate
+  - stcm-v0-6-artifact-capture-check
+  - stcm-v0-7-adoption-handshake
+  - stcm-v0-7-receiver-decision-receipt
+  - stcm-v0-8-receipt-chain
+
+expected_reports:
+  - reports/closure_harness_report.json
+  - reports/stcm_v0_6_portability_saturation.json
+  - reports/stcm_v0_6_artifact_capture_status.json
+  - reports/stcm_v0_7_adoption_handshake.json
+  - reports/stcm_v0_7_receiver_decision_receipt_check.json
+  - reports/stcm_v0_8_receipt_chain_check.json
+
+validated_surfaces:
+  v0_6_portability:
+    row_count: 25600
+    unexpected: 0
+    saturated: true
+  v0_7_adoption_handshake:
+    row_count: 96
+    unexpected: 0
+    saturated: true
+  v0_7_receiver_decision_receipt:
+    row_count: 8
+    unexpected: 0
+    saturated: true
+  v0_8_receipt_chain:
+    row_count: 9
+    unexpected: 0
+    saturated: true
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
