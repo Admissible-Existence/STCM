@@ -1,0 +1,54 @@
+receipt_chain_schema:
+  id: stcm_v0_8_receipt_chain_schema
+  boundary: stcm_v0_8
+  status: schema_stub
+  purpose: link_source_receipt_receiver_decision_and_next_receipt
+
+required_fields:
+  chain_id: string
+  source_repo: string
+  source_receipt_id: string
+  source_boundary: string
+  receiver_decision_receipt_id: string
+  receiving_repo: string
+  receiving_boundary: stcm_v0_7
+  next_receipt_id: string
+  next_receipt_boundary: string
+  chain_outcome: chain_outcome
+  chain_continuous: boolean
+  reason: string
+  timestamp: string
+
+allowed_chain_outcomes:
+  - CHAIN_ACCEPTED
+  - CHAIN_REBOUND_REQUIRED
+  - CHAIN_QUARANTINED
+  - CHAIN_REJECTED
+  - CHAIN_BROKEN
+  - CHAIN_CONFLICT_BLOCKED
+
+minimum_link_rule:
+  source_receipt_id_required: true
+  receiver_decision_receipt_id_required: true
+  next_receipt_id_required: true
+  source_receipt_is_not_modified: true
+  receiver_decision_receipt_is_not_modified: true
+
+chain_rule:
+  adopted_receiver_decision_may_chain_to_next_receipt: true
+  rebound_receiver_decision_requires_rebound_chain_outcome: true
+  rejected_receiver_decision_must_not_chain_as_accepted: true
+  quarantined_receiver_decision_must_not_chain_as_accepted: true
+  broken_or_missing_link_blocks_chain: true
+
+first_validator_scope:
+  validate_required_fields: true
+  validate_allowed_outcome: true
+  validate_minimum_links: true
+  validate_chain_outcome_matches_receiver_decision: true
+  evaluate_final_cross_repo_validity: false
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
