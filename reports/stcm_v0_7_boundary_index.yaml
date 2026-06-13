@@ -9,37 +9,66 @@ active_spec:
   commit: 1fc9cadeddd1c7462c9c24e4fd0134a77b29eb47
 
 active_implementation:
-  predicate:
-    path: tools/closure-harness/adoption.py
-    commit: 69957c852a4a3af56d57b6dcec618f31aedb35cf
-  fixtures:
-    path: tools/closure-harness/adoption_fixtures.py
-    commit: 06f85e38d636e5f11cbd2cc6ae29a4768e0e91d0
-  check:
-    path: tools/closure-harness/adoption_predicate_check.py
-    commit: 3b2eb723bc2e87ff6a18d9e52bc462322fbc34f9
+  adoption_handshake:
+    predicate:
+      path: tools/closure-harness/adoption.py
+      commit: 69957c852a4a3af56d57b6dcec618f31aedb35cf
+    fixtures:
+      path: tools/closure-harness/adoption_fixtures.py
+      commit: 06f85e38d636e5f11cbd2cc6ae29a4768e0e91d0
+    check:
+      path: tools/closure-harness/adoption_predicate_check.py
+      commit: 3b2eb723bc2e87ff6a18d9e52bc462322fbc34f9
+  receiver_decision_receipt:
+    schema:
+      path: reports/stcm_v0_7_receiver_decision_receipt_schema.yaml
+      commit: deb02cc19db6e58a7c4bdab2b23f3aedaddd3cde
+    validator:
+      path: tools/closure-harness/receiver_decision_receipt.py
+      commit: 0a9d4a1ab29e10da61deb7352102cf3a971a3f79
+    fixtures:
+      path: tools/closure-harness/receiver_decision_receipt_fixtures.py
+      commit: 99178f4fff5feb42e1dadeb5379e4e8c3d057708
+    check:
+      path: tools/closure-harness/receiver_decision_receipt_check.py
+      commit: 9c9bd9d27e09bfcfac637b88ae8d96c31117e09c
   registry:
     path: tools/task_registry.yaml
-    commit: 59281ff3731e26c566a5cca7390163011da5c83c
+    commit: 578da64524e2967fd4f3c337b9a44e36cab7c8e2
 
 active_evidence:
-  draft_saturation:
+  adoption_handshake_saturation:
     path: reports/stcm_v0_7_draft_saturation.yaml
     commit: d9216644e8706aa79bb4ea2cf4512e5b21d5779d
-  generated_report:
-    path: reports/stcm_v0_7_adoption_handshake.json
+    generated_report: reports/stcm_v0_7_adoption_handshake.json
+    row_count: 96
+    unexpected: 0
+    saturated: true
+  receiver_decision_receipt_saturation:
+    path: reports/stcm_v0_7_receiver_decision_receipt_saturation.yaml
+    commit: 6df79e13a9328a0ce2e7d1d7e86180861203c760
+    generated_report: reports/stcm_v0_7_receiver_decision_receipt_check.json
+    row_count: 8
+    unexpected: 0
+    saturated: true
 
 validated_basis:
-  row_count: 96
-  unexpected: 0
-  saturated: true
-  task_run_reported_green: true
+  adoption_handshake:
+    row_count: 96
+    unexpected: 0
+    saturated: true
+    task_run_reported_green: true
+  receiver_decision_receipt:
+    row_count: 8
+    unexpected: 0
+    saturated: true
+    task_run_reported_green: true
 
 scope_rule:
   allow_new_v0_7_predicates: false
   allow_scope_expansion: false
   allow_correction_commits: true
-  next_action: receiving_repo_integration_design
+  next_action: full_blank_task_registry_run
 
 non_effects:
   may_claim_final_cross_repo_validity: false
