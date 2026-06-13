@@ -1,0 +1,46 @@
+release_candidate:
+  id: stcm_v0_8_release_candidate
+  boundary: stcm_v0_8
+  status: release_candidate
+  purpose: receiving_repo_integration_receipt_chain
+
+basis:
+  boundary_index:
+    path: reports/stcm_v0_8_boundary_index.yaml
+    commit: c9226cc03b08b1e9e5c86a4ff027cb55cc01761a
+    status: full_registry_saturated
+  single_task_saturation:
+    path: reports/stcm_v0_8_receipt_chain_saturation.yaml
+    commit: a81e6e9be413ae0db12eff301cd03a0b9a23085f
+    row_count: 9
+    unexpected: 0
+    saturated: true
+  full_registry_saturation:
+    path: reports/stcm_v0_8_full_registry_saturation.yaml
+    commit: 760e3c8108882e7bca05764081d5a90a16e21bbf
+    workflow: core-lite-intake
+    task_id: blank
+    status: full_registry_saturated
+
+validated_surface:
+  receipt_chain:
+    row_count: 9
+    unexpected: 0
+    saturated: true
+
+release_scope:
+  includes_new_workflow: false
+  includes_registry_fragment: false
+  includes_dispatcher_expansion: false
+  includes_cross_repo_finality_claim: false
+  includes_receiver_auto_open: false
+
+candidate_rule:
+  may_be_released_as_next_minor_tag: true
+  suggested_tag: v0.6.0
+  suggested_title: STCM v0.8 Receipt-Chain Continuity
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
