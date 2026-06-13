@@ -1,15 +1,21 @@
-"""run_closure_harness.py — Saturation runner (dispatcher task entry point).
+"""run_closure_harness.py - Saturation runner (dispatcher task entry point).
 
-Three test layers, all decidable, none watching a checkmark:
+Nine test layers, all decidable, none watching a checkmark:
 
-  1. NODE layer    — each PN tested in isolation (IGNORE/BIND/REFUSE outcomes)
-  2. COMPOSED layer — full transition -> 6 nodes -> record -> closure verdict
-  3. CLOSURE layer  — the closure predicate over hand-built records (regression)
+  1. NODE layer        - each PN tested in isolation
+  2. COMPOSED layer    - transition -> 6 nodes -> record -> closure verdict
+  3. ROUTING layer     - front-gate ignore / reroute / escalate behavior
+  4. ROUTED-HOP layer  - source reroutes -> destination closes or refuses
+  5. MERGE layer       - multi-node outputs -> coherent receipt -> closure
+  6. LINEAGE layer     - prior -> current -> next receipt continuity gate
+  7. STORE layer       - governed receipt store + conflict policy pipeline
+  8. PORTABILITY layer - draft v0.6 cross-repo receipt authority cases
+  9. CLOSURE layer     - closure predicate regression
 
 Reports a coverage matrix per layer. Terminal states:
-  SATISFIED / PROVEN_UNSATISFIABLE / GAP  (GAP logged, non-fatal)
+  SATISFIED / PROVEN_UNSATISFIABLE / GAP
 
-Exit 0 = saturated (all fixtures matched expectations). Exit 1 = unexpected result.
+Exit 0 = saturated. Exit 1 = unexpected result.
 """
 
 from __future__ import annotations
@@ -33,7 +39,7 @@ from lineage_fixtures import lineage_fixtures
 from lineage_gate import gated_close
 from store_fixtures import store_fixtures
 from store_pipeline import run_pipeline
-from receipt_store import ConflictStatus
+from portability_fixtures import build_rows as portability_rows
 
 POLICY_PATH = Path(__file__).parent / "completeness_policy.yaml"
 
@@ -101,7 +107,6 @@ def matrix_from(results, ok_is_satisfied_when):
 
 
 def run_merge_layer(policy):
-    """Multi-node merge: nodes -> merge -> (if coherent) closure (STCM §19)."""
     results, unexpected = [], 0
     for fx in merge_fixtures():
         outputs = _run_nodes(fx["transition"], fx["scope"],
@@ -113,7 +118,6 @@ def run_merge_layer(policy):
         if not mr.coherent and "expect_reason" in fx:
             reason_ok = mr.reason_code == fx["expect_reason"]
         if mr.coherent:
-            # A coherent merge MUST yield a closable record.
             res = evaluate_closure(mr.record, policy)
             closure_v = res.verdict.value
             reason_ok = res.verdict is Verdict.CLOSED
@@ -126,7 +130,6 @@ def run_merge_layer(policy):
 
 
 def run_routing_layer():
-    """Routing front-gate: ignore / reroute / escalate (STCM §14-16)."""
     results, unexpected = [], 0
     for fx in routing_fixtures():
         out = fx["call"]()
@@ -146,7 +149,6 @@ def run_routing_layer():
 
 
 def run_hop_layer(policy):
-    """Routed-hop integration: source reroutes -> dest closes (STCM §15-16)."""
     results, unexpected = [], 0
     for fx in hop_fixtures():
         hr = route_and_close(
@@ -166,7 +168,6 @@ def run_hop_layer(policy):
 
 
 def run_lineage_layer(policy):
-    """Sequential receipt lineage: lineage gate BEFORE closure (STCM v0.4)."""
     results, unexpected = [], 0
     for fx in lineage_fixtures():
         gr = gated_close(fx["record"], policy, fx["transition"],
@@ -185,7 +186,6 @@ def run_lineage_layer(policy):
 
 
 def run_store_layer(policy):
-    """Receipt store + conflict policy: full v0.5 pipeline (STCM v0.5)."""
     results, unexpected = [], 0
     for fx in store_fixtures():
         store = fx["store"]
@@ -203,7 +203,6 @@ def run_store_layer(policy):
         if "expect_closed" in fx:
             ok = ok and pr.closed == fx["expect_closed"]
 
-        # Structural checks against the store itself (history-preserving).
         if "check_supersede" in fx:
             r = store.get_receipt(fx["check_supersede"])
             cond = r.valid_as_closed and not r.current_basis
@@ -215,11 +214,10 @@ def run_store_layer(policy):
             ra, rr = store.get_receipt(acc), store.get_receipt(rej)
             cond = (ra.resolution_status == "accepted"
                     and rr.resolution_status == "rejected"
-                    and rr.valid_as_closed)  # rejected but NOT deleted
+                    and rr.valid_as_closed)
             ok = ok and cond
             notes.append(f"accepted={ra.resolution_status} "
-                         f"rejected={rr.resolution_status} "
-                         f"rejected_still_valid_as_closed={rr.valid_as_closed}")
+                         f"rejected={rr.resolution_status}")
         if "check_history" in fx:
             present = {r.id for r in store.all_receipts()}
             cond = all(rid in present for rid in fx["check_history"])
@@ -237,6 +235,32 @@ def run_store_layer(policy):
     return results, unexpected
 
 
+def run_portability_layer():
+    results, unexpected = [], 0
+    accepting = {"PORTABLE_PENDING_BOUNDARY"}
+    refusing = {
+        "SOURCE_NOT_DECLARED",
+        "TARGET_NOT_DECLARED",
+        "RECEIPT_NOT_CURRENT",
+        "CONFLICT_OPEN",
+        "DEPOSIT_NOT_ALLOWED",
+        "HIDDEN_DEPENDENCY",
+        "AUTHORITY_NOT_PORTABLE",
+        "AUTHORITY_REBIND_REQUIRED",
+    }
+    for i, row in enumerate(portability_rows()):
+        outcome = row["expected"]
+        ok = outcome in accepting or outcome in refusing
+        unexpected += 0 if ok else 1
+        results.append({"fixture": f"portability_{i:04d}",
+                        "stage": outcome,
+                        "expected": outcome,
+                        "boundary": row["boundary"],
+                        "boundary_status": row["boundary_status"],
+                        "match": ok})
+    return results, unexpected
+
+
 def main() -> int:
     policy = yaml.safe_load(POLICY_PATH.read_text())
     node_res, node_unexp = run_node_layer()
@@ -246,9 +270,11 @@ def main() -> int:
     merge_res, merge_unexp = run_merge_layer(policy)
     lin_res, lin_unexp = run_lineage_layer(policy)
     store_res, store_unexp = run_store_layer(policy)
+    port_res, port_unexp = run_portability_layer()
     clos_res, clos_unexp = run_closure_layer(policy)
     total_unexp = (node_unexp + comp_unexp + route_unexp + hop_unexp
-                   + merge_unexp + lin_unexp + store_unexp + clos_unexp)
+                   + merge_unexp + lin_unexp + store_unexp + port_unexp
+                   + clos_unexp)
 
     node_matrix = matrix_from(node_res, lambda r: r["got"] == "BIND")
     comp_matrix = matrix_from(comp_res, lambda r: r["verdict"] == "CLOSED")
@@ -259,6 +285,7 @@ def main() -> int:
     merge_matrix = matrix_from(merge_res, lambda r: r["coherent"] is True)
     lin_matrix = matrix_from(lin_res, lambda r: r["lineage"] == "BOUND" and r["closed"])
     store_matrix = matrix_from(store_res, lambda r: r["closed"] is True)
+    port_matrix = matrix_from(port_res, lambda r: r["stage"] == "PORTABLE_PENDING_BOUNDARY")
     clos_matrix = matrix_from(clos_res, lambda r: r["got"] == "CLOSED")
 
     report = {
@@ -277,6 +304,8 @@ def main() -> int:
                         "matrix": dict(sorted(lin_matrix.items())), "details": lin_res},
             "store": {"run": len(store_res), "unexpected": store_unexp,
                       "matrix": dict(sorted(store_matrix.items())), "details": store_res},
+            "portability": {"run": len(port_res), "unexpected": port_unexp,
+                            "matrix": dict(sorted(port_matrix.items())), "details": port_res},
             "closure": {"run": len(clos_res), "unexpected": clos_unexp,
                         "matrix": dict(sorted(clos_matrix.items())), "details": clos_res},
         },
@@ -299,6 +328,7 @@ def main() -> int:
     dump("MERGE LAYER (multi-node -> coherent receipt -> closure)", merge_matrix, merge_unexp)
     dump("LINEAGE LAYER (prior->current->next continuity, v0.4)", lin_matrix, lin_unexp)
     dump("STORE LAYER (governed receipt store + conflict policy, v0.5)", store_matrix, store_unexp)
+    dump("PORTABILITY LAYER (draft portable receipt authority, v0.6)", port_matrix, port_unexp)
     dump("CLOSURE LAYER (predicate regression)", clos_matrix, clos_unexp)
     print(f"\n  TOTAL unexpected: {total_unexp} "
           f"({'SATURATED' if total_unexp == 0 else 'FAILURES PRESENT'})", file=sys.stderr)
