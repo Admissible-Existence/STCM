@@ -1,0 +1,24 @@
+receiver_decision_receipt_saturation:
+  id: stcm_v0_7_receiver_decision_receipt_saturation
+  boundary: stcm_v0_7
+  status: draft_saturated
+  task: stcm-v0-7-receiver-decision-receipt
+
+basis:
+  user_reported_task_run_green: true
+  expected_report: reports/stcm_v0_7_receiver_decision_receipt_check.json
+  expected_row_count: 8
+  expected_unexpected: 0
+  expected_saturated: true
+
+implementation_commits:
+  schema: deb02cc19db6e58a7c4bdab2b23f3aedaddd3cde
+  validator: 0a9d4a1ab29e10da61deb7352102cf3a971a3f79
+  fixtures: 99178f4fff5feb42e1dadeb5379e4e8c3d057708
+  check: 9c9bd9d27e09bfcfac637b88ae8d96c31117e09c
+  registry: 578da64524e2967fd4f3c337b9a44e36cab7c8e2
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
