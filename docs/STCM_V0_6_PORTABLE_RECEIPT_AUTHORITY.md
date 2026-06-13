@@ -4,7 +4,7 @@
 
 Draft boundary.
 
-This document begins STCM v0.6 by defining portability vectors surfaced by AE Validation Factory:
+This document defines portability vectors surfaced by AE Validation Factory:
 
 ```text
 1. Hidden dependency refusal
@@ -12,6 +12,7 @@ This document begins STCM v0.6 by defining portability vectors surfaced by AE Va
 3. Cross-repo lineage continuity
 4. Deposit posture
 5. Receipt posture
+6. Conflict posture
 ```
 
 STCM v0.6 is not yet a completed portability proof.
@@ -42,7 +43,7 @@ A receipt is portable only if the authority, lineage, conflict posture, deposit 
 A cross-repo transition is admissible only when the accepting repository can independently evaluate the receipt basis, authority basis, lineage basis, deposit posture, receipt posture, and conflict posture of the incoming receipt.
 ```
 
-If any basis depends on undeclared state, local-only authority, stale receipts, superseded receipts, missing receipts, conflict-linked receipts, unresolved conflict, broken lineage, technical-only access, expired authority, scope mismatch, or undeclared deposit posture, the transition must not be treated as cross-repo valid.
+If any basis depends on undeclared state, local-only authority, stale receipts, superseded receipts, missing receipts, conflict-linked receipts, blocking conflict posture, broken lineage, technical-only access, expired authority, scope mismatch, or undeclared deposit posture, the transition must not be treated as cross-repo valid.
 
 ---
 
@@ -83,6 +84,10 @@ The declared acceptance posture of the target repository for incoming receipts, 
 ### Receipt posture
 
 The status of the incoming receipt as current, missing, stale, superseded, or conflict-linked.
+
+### Conflict posture
+
+The declared conflict state attached to the incoming receipt or its acceptance path.
 
 ### Authority posture
 
@@ -140,28 +145,13 @@ A portable receipt may become current basis in a target repository only when its
 
 ```text
 source_bound
-  Authority exists only in the source repository.
-
 evidence_only
-  Evidence may travel, but no authority travels with it.
-
 delegated
-  Authority has been delegated but still requires target-side rebind.
-
 rebound
-  Authority has been re-established in the target repository.
-
 portable_signed
-  Authority is explicitly signed, receipt-bound, and target-accepted.
-
 expired
-  Authority existed but is no longer valid.
-
 scope_mismatch
-  Authority does not cover the target transition scope.
-
 refused
-  Authority cannot be evaluated or accepted by the target repository.
 ```
 
 ### Refusal outcomes
@@ -217,19 +207,10 @@ A target repository must declare whether incoming records may be accepted, refer
 
 ```text
 declared_accept
-  Incoming validation records may be deposited under declared policy.
-
 declared_reference_only
-  Incoming records may be referenced, but not made current basis.
-
 missing_policy
-  No target deposit policy is declared.
-
 refuses_external
-  Target policy refuses external validation records.
-
 technical_only
-  A technical write path exists, but admissible deposit authority is not declared.
 ```
 
 ### Refusal outcomes
@@ -255,19 +236,10 @@ An incoming receipt must be evaluated by posture before it can be considered por
 
 ```text
 current
-  Receipt is eligible for current-basis evaluation.
-
 missing
-  No receipt exists to evaluate.
-
 stale
-  Receipt exists but is not current.
-
 superseded
-  Receipt has been replaced by a later receipt.
-
 conflict_linked
-  Receipt is linked to unresolved or blocking conflict posture.
 ```
 
 ### Refusal outcomes
@@ -277,6 +249,52 @@ MISSING_RECEIPT
 RECEIPT_STALE
 RECEIPT_SUPERSEDED
 RECEIPT_CONFLICT_LINKED
+```
+
+---
+
+## Boundary vector 6 — Conflict posture
+
+Conflict state cannot remain binary across repository boundaries.
+
+A target repository must know whether the conflict posture is absent, non-blocking, actively blocking, under review, resolved in favor of acceptance, resolved against acceptance, superseding, or unresolved externally.
+
+### Conflict posture classes
+
+```text
+none
+non_blocking
+open_blocking
+under_review
+resolved_accepted
+resolved_rejected
+superseded_by_resolution
+unresolved_external
+```
+
+### Positive draft conflict postures
+
+```text
+none
+non_blocking
+resolved_accepted
+```
+
+### Refusal outcomes
+
+```text
+CONFLICT_OPEN
+CONFLICT_UNDER_REVIEW
+CONFLICT_RESOLUTION_REJECTED
+CONFLICT_SUPERSEDED_BY_RESOLUTION
+CONFLICT_EXTERNAL_UNRESOLVED
+```
+
+### Boundary note
+
+```text
+Conflict posture is not visibility.
+Conflict posture is a declared admissibility condition.
 ```
 
 ---
@@ -304,7 +322,7 @@ S is declared
 T is declared
 R exists
 P is current
-C is closed or non-blocking
+C is absent, non-blocking, or resolved-accepted
 D allows incoming deposit or reference
 H is empty
 L remains continuous across S -> T
@@ -315,7 +333,24 @@ If any required element fails, the receipt is not cross-repo valid.
 
 ---
 
-## Initial outcome map
+## Current fixture surface
+
+```text
+2 source states
+2 target states
+5 receipt postures
+8 conflict postures
+5 deposit postures
+2 hidden dependency states
+2 lineage states
+8 authority postures
+
+row_count: 102400
+```
+
+---
+
+## Outcome map
 
 ```text
 SOURCE_NOT_DECLARED
@@ -325,6 +360,10 @@ RECEIPT_STALE
 RECEIPT_SUPERSEDED
 RECEIPT_CONFLICT_LINKED
 CONFLICT_OPEN
+CONFLICT_UNDER_REVIEW
+CONFLICT_RESOLUTION_REJECTED
+CONFLICT_SUPERSEDED_BY_RESOLUTION
+CONFLICT_EXTERNAL_UNRESOLVED
 DEPOSIT_NOT_ALLOWED
 TECHNICAL_ACCESS_NOT_AUTHORITY
 HIDDEN_DEPENDENCY
