@@ -1,7 +1,7 @@
 boundary_index:
   id: stcm_v0_7_boundary_index
   boundary: stcm_v0_7
-  status: draft_saturated
+  status: full_registry_green
   purpose: receiving_repo_adoption_handshake
 
 active_spec:
@@ -51,6 +51,13 @@ active_evidence:
     row_count: 8
     unexpected: 0
     saturated: true
+  full_registry_run:
+    path: reports/stcm_v0_7_full_registry_run.yaml
+    commit: d4acee13f25be18bb536ed70775f38300ed35cf2
+    workflow: core-lite-intake
+    task_id: blank
+    artifact_count: 1
+    artifact_downloaded_by_user: true
 
 validated_basis:
   adoption_handshake:
@@ -63,12 +70,17 @@ validated_basis:
     unexpected: 0
     saturated: true
     task_run_reported_green: true
+  full_registry:
+    task_id_blank: true
+    run_reported_green: true
+    artifact_count: 1
+    artifact_downloaded_by_user: true
 
 scope_rule:
   allow_new_v0_7_predicates: false
   allow_scope_expansion: false
   allow_correction_commits: true
-  next_action: full_blank_task_registry_run
+  next_action: v0_7_release_candidate_record
 
 non_effects:
   may_claim_final_cross_repo_validity: false
