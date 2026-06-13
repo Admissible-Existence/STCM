@@ -17,6 +17,7 @@ on:
     paths:
       - "tools/**"
       - "docs/**"
+      - "reports/**"
       - ".github/workflows/core-lite-intake.yml"
 
 permissions:
@@ -48,4 +49,5 @@ jobs:
         with:
           name: core-lite-intake-reports
           path: |
+            reports/**/*.json
             tools/closure-harness/reports/**/*.json
