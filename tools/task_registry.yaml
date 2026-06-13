@@ -59,3 +59,14 @@ tasks:
       Saturates the STCM v0.7 receiving-repo adoption handshake predicate for
       portable receipts. This is a registered task under core-lite-intake, not a
       separate workflow.
+
+  - id: stcm-v0-7-receiver-decision-receipt
+    kind: validator
+    entry: tools/closure-harness/receiver_decision_receipt_check.py
+    runtime: python3
+    deps: []
+    fail_on_nonzero_exit: true
+    description: >
+      Validates the STCM v0.7 receiver decision receipt schema and confirms
+      that receipt outcome and adopted state agree with the adoption handshake.
+      This is a registered task under core-lite-intake, not a separate workflow.
