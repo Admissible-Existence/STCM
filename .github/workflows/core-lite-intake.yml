@@ -17,6 +17,7 @@ on:
     paths:
       - "tools/**"
       - "docs/**"
+      - ".github/workflows/core-lite-intake.yml"
 
 permissions:
   contents: read
@@ -40,3 +41,11 @@ jobs:
         env:
           ONLY_TASK: ${{ github.event.inputs.task_id }}
         run: python3 tools/dispatch.py
+
+      - name: Upload core-lite reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: core-lite-intake-reports
+          path: |
+            tools/closure-harness/reports/**/*.json
