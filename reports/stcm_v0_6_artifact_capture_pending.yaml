@@ -1,0 +1,45 @@
+artifact_capture:
+  id: stcm_v0_6_artifact_capture_pending
+  boundary: stcm_v0_6
+  status: awaiting_manual_artifact_values
+  workflow: core-lite-intake
+  registered_task: stcm-v0-6-portability-predicate
+
+expected_artifact:
+  name: core-lite-intake-reports
+  path: tools/closure-harness/reports/stcm_v0_6_portability_saturation.json
+
+required_fields:
+  stage: stcm_v0_6_portability_saturation
+  boundary: stcm_v0_6
+  row_count: 102400
+  unexpected: 0
+  saturated: true
+  boundary_status: validated_draft_candidate
+
+manual_capture:
+  run_id: TODO
+  run_url: TODO
+  artifact_id: TODO
+  artifact_name: core-lite-intake-reports
+  artifact_sha256: TODO
+  captured_by: TODO
+  captured_at_utc: TODO
+
+promotion_rule:
+  may_promote_validation_record: false
+  promote_when:
+    row_count: 102400
+    unexpected: 0
+    saturated: true
+    boundary_status: validated_draft_candidate
+
+source_basis:
+  main_authority_doc: 0314c3737c213362059f3b451ab822d3ebe059c8
+  validation_record: ee705071e3b1a057f0437f6fcc3223cb94e2bac3
+  artifact_capture_doc: b5a5499a65f512ecf9f5e3de34791f8cb160e207
+  portability_py: 250fc7b9baeeac0bc4315d2a2163e4130643db50
+  portability_fixtures_py: fbb6cbbcf5127accf1a95dcfe1e03b017650ae9f
+  run_closure_harness_py: 3b33f1b109241210d057b57216b877a8a0c1de00
+  core_lite_intake_yml: 08a7ff589f8c556350696c9ac12ad78c0777c0e4
+  task_registry_yaml: 38e1013cf7daf620455ef8cd15be8b019f4cb756
