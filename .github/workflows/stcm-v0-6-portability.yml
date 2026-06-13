@@ -1,0 +1,49 @@
+name: STCM v0.6 Portability Predicate Check
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'docs/STCM_V0_6_PORTABLE_RECEIPT_AUTHORITY.md'
+      - 'tools/closure-harness/portability.py'
+      - 'tools/closure-harness/portability_fixtures.py'
+      - 'tools/closure-harness/portability_predicate_check.py'
+      - '.github/workflows/stcm-v0-6-portability.yml'
+  pull_request:
+    paths:
+      - 'docs/STCM_V0_6_PORTABLE_RECEIPT_AUTHORITY.md'
+      - 'tools/closure-harness/portability.py'
+      - 'tools/closure-harness/portability_fixtures.py'
+      - 'tools/closure-harness/portability_predicate_check.py'
+      - '.github/workflows/stcm-v0-6-portability.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+    working-directory: tools/closure-harness
+
+jobs:
+  portability-predicate-check:
+    name: Run STCM v0.6 portability predicate check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run portability predicate check
+        run: python portability_predicate_check.py
+
+      - name: Upload portability report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stcm-v0-6-portability-predicate-check
+          path: tools/closure-harness/reports/stcm_v0_6_portability_predicate_check.json
