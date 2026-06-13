@@ -1,0 +1,47 @@
+receiver_integration_design:
+  id: stcm_v0_7_receiver_integration_design
+  boundary: stcm_v0_7
+  status: design_stub
+  purpose: define_how_a_receiving_repo_calls_the_adoption_handshake
+
+minimal_call_contract:
+  input:
+    source_receipt_present: boolean
+    receiver_declared: boolean
+    portable_status: portable_or_reboundable_or_invalid
+    conflict_blocking: boolean
+    receiver_decision: adopt_or_rebind_or_reject_or_quarantine
+  output:
+    outcome: adoption_outcome
+    adopted: boolean
+    reason: string
+
+allowed_receiver_decisions:
+  - adopt
+  - rebind
+  - reject
+  - quarantine
+
+allowed_outcomes:
+  - ADOPTED
+  - REBOUND
+  - QUARANTINED
+  - REJECTED
+  - INSUFFICIENT_DECLARATION
+  - AUTHORITY_MISMATCH
+  - CONFLICT_BLOCKED
+
+integration_rule:
+  receiving_repo_must_declare_before_decision: true
+  receiving_repo_must_emit_decision_receipt: true
+  portable_receipt_does_not_auto_commit: true
+
+next_implementation_step:
+  create_receiver_decision_receipt_schema: true
+  add_new_workflow: false
+  add_new_predicate_before_schema: false
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
