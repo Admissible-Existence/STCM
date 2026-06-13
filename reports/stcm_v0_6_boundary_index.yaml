@@ -1,0 +1,65 @@
+boundary_index:
+  id: stcm_v0_6_boundary_index
+  boundary: stcm_v0_6
+  status: validated_draft_candidate
+  purpose: portable_receipt_authority
+
+active_authority:
+  portable_receipt_authority:
+    path: docs/STCM_V0_6_PORTABLE_RECEIPT_AUTHORITY.md
+    commit: 0314c3737c213362059f3b451ab822d3ebe059c8
+
+active_implementation:
+  portability_predicate:
+    path: tools/closure-harness/portability.py
+    commit: 250fc7b9baeeac0bc4315d2a2163e4130643db50
+  portability_fixtures:
+    path: tools/closure-harness/portability_fixtures.py
+    commit: fbb6cbbcf5127accf1a95dcfe1e03b017650ae9f
+  portability_runner:
+    path: tools/closure-harness/portability_predicate_check.py
+    commit: c3b0e48e750e4c9271f286dafde54906a7462927
+  artifact_capture:
+    path: tools/closure-harness/artifact_capture_check_v2.py
+    commit: 4dbe9280bb1da3b8243659d9a77873a897b9e111
+  task_registry:
+    path: tools/task_registry.yaml
+    commit: dff8c27296d67ec4c4d53a3a6d6675ac4793f30b
+  workflow:
+    path: .github/workflows/core-lite-intake.yml
+    commit: ef7cf9fc30e1dc7c6dfb4fd7317e1a6dfece4b1c
+
+active_evidence:
+  run_mode_rule:
+    path: reports/stcm_v0_6_run_mode_rule.yaml
+    commit: 5270f4b4cf4db7f6141770de9219a198ab06c1b2
+  row_count_correction:
+    path: reports/stcm_v0_6_row_count_correction.yaml
+    commit: 5819bfef52b24442220279a833d59fee6b87a9bb
+  promotion_record:
+    path: reports/stcm_v0_6_validated_draft_candidate.yaml
+    commit: f1403fb35ec9b137a22c01f772fe35f27cff7406
+  closure_harness_report:
+    path: reports/closure_harness_report.json
+  portability_saturation:
+    path: reports/stcm_v0_6_portability_saturation.json
+  artifact_capture_status:
+    path: reports/stcm_v0_6_artifact_capture_status.json
+
+validated_basis:
+  row_count: 25600
+  unexpected: 0
+  saturated: true
+  artifact_capture_validated: true
+  full_blank_task_run_reported_green: true
+
+freeze_rule:
+  allow_new_v0_6_predicates: false
+  allow_scope_expansion: false
+  allow_correction_commits: true
+  next_boundary_for_repo_adoption: stcm_v0_7
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_open_all_repositories_to_factory: false
+  may_bypass_target_declaration: false
