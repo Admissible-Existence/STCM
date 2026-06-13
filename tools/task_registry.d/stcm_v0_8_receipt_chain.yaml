@@ -1,0 +1,11 @@
+task:
+  id: stcm-v0-8-receipt-chain
+  kind: validator
+  entry: tools/closure-harness/receipt_chain_check.py
+  runtime: python3
+  deps: []
+  fail_on_nonzero_exit: true
+  description: >
+    Validates the STCM v0.8 minimum receipt-chain schema linking source
+    receipt, receiver decision receipt, and next receipt. This does not claim
+    final cross-repo validity.
