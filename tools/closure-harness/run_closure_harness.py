@@ -31,6 +31,9 @@ from routed_hop import route_and_close
 from hop_fixtures import hop_fixtures
 from lineage_fixtures import lineage_fixtures
 from lineage_gate import gated_close
+from store_fixtures import store_fixtures
+from store_pipeline import run_pipeline
+from receipt_store import ConflictStatus
 
 POLICY_PATH = Path(__file__).parent / "completeness_policy.yaml"
 
@@ -181,6 +184,59 @@ def run_lineage_layer(policy):
     return results, unexpected
 
 
+def run_store_layer(policy):
+    """Receipt store + conflict policy: full v0.5 pipeline (STCM v0.5)."""
+    results, unexpected = [], 0
+    for fx in store_fixtures():
+        store = fx["store"]
+        pr = run_pipeline(fx["transition"], fx["record"], policy,
+                          store, fx["chain_id"])
+        ok = True
+        notes = []
+
+        if "expect_head" in fx:
+            ok = ok and pr.store_head_id == fx["expect_head"]
+        if "expect_lineage" in fx:
+            ok = ok and pr.lineage.verdict.value == fx["expect_lineage"]
+        if "expect_conflict" in fx:
+            ok = ok and pr.conflict_status == fx["expect_conflict"]
+        if "expect_closed" in fx:
+            ok = ok and pr.closed == fx["expect_closed"]
+
+        # Structural checks against the store itself (history-preserving).
+        if "check_supersede" in fx:
+            r = store.get_receipt(fx["check_supersede"])
+            cond = r.valid_as_closed and not r.current_basis
+            ok = ok and cond
+            notes.append(f"{r.id} valid_as_closed={r.valid_as_closed} "
+                         f"current_basis={r.current_basis}")
+        if "check_resolution" in fx:
+            acc, rej = fx["check_resolution"]
+            ra, rr = store.get_receipt(acc), store.get_receipt(rej)
+            cond = (ra.resolution_status == "accepted"
+                    and rr.resolution_status == "rejected"
+                    and rr.valid_as_closed)  # rejected but NOT deleted
+            ok = ok and cond
+            notes.append(f"accepted={ra.resolution_status} "
+                         f"rejected={rr.resolution_status} "
+                         f"rejected_still_valid_as_closed={rr.valid_as_closed}")
+        if "check_history" in fx:
+            present = {r.id for r in store.all_receipts()}
+            cond = all(rid in present for rid in fx["check_history"])
+            ok = ok and cond
+            notes.append(f"all_present={cond}")
+
+        unexpected += 0 if ok else 1
+        results.append({"fixture": fx["name"], "stage": fx["stage"],
+                        "head": pr.store_head_id,
+                        "lineage": pr.lineage.verdict.value,
+                        "conflict": pr.conflict_status, "closed": pr.closed,
+                        "final_reason": pr.final_reason,
+                        "update": pr.store_update_candidate is not None,
+                        "notes": "; ".join(notes), "match": ok})
+    return results, unexpected
+
+
 def main() -> int:
     policy = yaml.safe_load(POLICY_PATH.read_text())
     node_res, node_unexp = run_node_layer()
@@ -189,9 +245,10 @@ def main() -> int:
     hop_res, hop_unexp = run_hop_layer(policy)
     merge_res, merge_unexp = run_merge_layer(policy)
     lin_res, lin_unexp = run_lineage_layer(policy)
+    store_res, store_unexp = run_store_layer(policy)
     clos_res, clos_unexp = run_closure_layer(policy)
     total_unexp = (node_unexp + comp_unexp + route_unexp + hop_unexp
-                   + merge_unexp + lin_unexp + clos_unexp)
+                   + merge_unexp + lin_unexp + store_unexp + clos_unexp)
 
     node_matrix = matrix_from(node_res, lambda r: r["got"] == "BIND")
     comp_matrix = matrix_from(comp_res, lambda r: r["verdict"] == "CLOSED")
@@ -201,6 +258,7 @@ def main() -> int:
         hop_res, lambda r: r["routed"] and r["matched"] and r["closed"])
     merge_matrix = matrix_from(merge_res, lambda r: r["coherent"] is True)
     lin_matrix = matrix_from(lin_res, lambda r: r["lineage"] == "BOUND" and r["closed"])
+    store_matrix = matrix_from(store_res, lambda r: r["closed"] is True)
     clos_matrix = matrix_from(clos_res, lambda r: r["got"] == "CLOSED")
 
     report = {
@@ -217,6 +275,8 @@ def main() -> int:
                       "matrix": dict(sorted(merge_matrix.items())), "details": merge_res},
             "lineage": {"run": len(lin_res), "unexpected": lin_unexp,
                         "matrix": dict(sorted(lin_matrix.items())), "details": lin_res},
+            "store": {"run": len(store_res), "unexpected": store_unexp,
+                      "matrix": dict(sorted(store_matrix.items())), "details": store_res},
             "closure": {"run": len(clos_res), "unexpected": clos_unexp,
                         "matrix": dict(sorted(clos_matrix.items())), "details": clos_res},
         },
@@ -238,6 +298,7 @@ def main() -> int:
     dump("ROUTED-HOP LAYER (source reroutes -> dest closes)", hop_matrix, hop_unexp)
     dump("MERGE LAYER (multi-node -> coherent receipt -> closure)", merge_matrix, merge_unexp)
     dump("LINEAGE LAYER (prior->current->next continuity, v0.4)", lin_matrix, lin_unexp)
+    dump("STORE LAYER (governed receipt store + conflict policy, v0.5)", store_matrix, store_unexp)
     dump("CLOSURE LAYER (predicate regression)", clos_matrix, clos_unexp)
     print(f"\n  TOTAL unexpected: {total_unexp} "
           f"({'SATURATED' if total_unexp == 0 else 'FAILURES PRESENT'})", file=sys.stderr)
