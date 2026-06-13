@@ -43,6 +43,9 @@ from portability import PortabilityInput, evaluate_portability
 from portability_fixtures import build_rows as portability_rows
 
 POLICY_PATH = Path(__file__).parent / "completeness_policy.yaml"
+ROOT = Path(__file__).resolve().parents[2]
+REPORT_DIR = ROOT / "reports"
+REPORT_PATH = REPORT_DIR / "closure_harness_report.json"
 
 
 def run_node_layer():
@@ -305,7 +308,27 @@ def main() -> int:
         "total_unexpected": total_unexp,
         "saturated": total_unexp == 0,
     }
-    print(json.dumps(report, indent=2))
+
+    REPORT_DIR.mkdir(parents=True, exist_ok=True)
+    REPORT_PATH.write_text(json.dumps(report, indent=2) + "\n")
+
+    summary = {
+        "report_path": str(REPORT_PATH.relative_to(ROOT)),
+        "total_unexpected": total_unexp,
+        "saturated": total_unexp == 0,
+        "layers": {
+            "node": {"run": len(node_res), "unexpected": node_unexp},
+            "composed": {"run": len(comp_res), "unexpected": comp_unexp},
+            "routing": {"run": len(route_res), "unexpected": route_unexp},
+            "routed_hop": {"run": len(hop_res), "unexpected": hop_unexp},
+            "merge": {"run": len(merge_res), "unexpected": merge_unexp},
+            "lineage": {"run": len(lin_res), "unexpected": lin_unexp},
+            "store": {"run": len(store_res), "unexpected": store_unexp},
+            "portability": {"run": len(port_res), "unexpected": port_unexp},
+            "closure": {"run": len(clos_res), "unexpected": clos_unexp},
+        },
+    }
+    print(json.dumps(summary, indent=2))
 
     def dump(title, matrix, unexp):
         print(f"\n=== {title} ===", file=sys.stderr)
