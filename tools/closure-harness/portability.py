@@ -16,7 +16,7 @@ class PortabilityInput:
     target_declared: bool
     receipt_current: bool
     conflict_open: bool
-    deposit_allowed: bool
+    deposit_posture: str
     hidden_dependency: bool
     lineage_continuous: bool
     authority_class: str
@@ -48,10 +48,14 @@ def evaluate_portability(inp: PortabilityInput) -> PortabilityDecision:
         return PortabilityDecision(
             "CONFLICT_OPEN", False, False,
             "Open conflict blocks cross-repo portability.")
-    if not inp.deposit_allowed:
+    if inp.deposit_posture in {"missing_policy", "refuses_external"}:
         return PortabilityDecision(
             "DEPOSIT_NOT_ALLOWED", False, False,
             "Target repository has not declared acceptance of incoming validation records.")
+    if inp.deposit_posture == "technical_only":
+        return PortabilityDecision(
+            "TECHNICAL_ACCESS_NOT_AUTHORITY", False, False,
+            "Technical write access is not admissible deposit authority.")
     if inp.hidden_dependency:
         return PortabilityDecision(
             "HIDDEN_DEPENDENCY", False, False,
@@ -72,6 +76,10 @@ def evaluate_portability(inp: PortabilityInput) -> PortabilityDecision:
             "Evidence may travel, but target authority has not been rebound.")
 
     if inp.authority_class in {"authority_portable", "evidence_portable"}:
+        if inp.deposit_posture == "declared_reference_only":
+            return PortabilityDecision(
+                "REFERENCE_ONLY_PENDING_BOUNDARY", True, False,
+                "Receipt may be referenced, but not deposited as current basis.")
         return PortabilityDecision(
             "PORTABLE_PENDING_BOUNDARY", True, False,
             "Positive path is visible, but STCM v0.6 remains draft.")
