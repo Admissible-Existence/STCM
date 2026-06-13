@@ -17,7 +17,13 @@ from portability import PortabilityInput, evaluate_portability
 DIMENSIONS = {
     "source_declared": [True, False],
     "target_declared": [True, False],
-    "receipt_current": [True, False],
+    "receipt_posture": [
+        "current",
+        "missing",
+        "stale",
+        "superseded",
+        "conflict_linked",
+    ],
     "conflict_open": [True, False],
     "deposit_posture": [
         "declared_accept",
