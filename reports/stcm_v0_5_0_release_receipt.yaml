@@ -1,0 +1,42 @@
+release_receipt:
+  id: stcm_v0_5_0_release_receipt
+  release_tag: v0.5.0
+  release_status: published
+  target_commit: 8fb6f05ffcabd6f630b659eee58c63281f8c3cd9
+  target_commit_short: 8fb6f05
+  target_commit_message: Record STCM v0.7 release candidate
+
+boundary:
+  id: stcm_v0_7
+  release_role: receiving_repo_adoption_handshake
+  status_at_release: release_candidate
+  release_candidate:
+    path: reports/stcm_v0_7_release_candidate.yaml
+    commit: 8fb6f05ffcabd6f630b659eee58c63281f8c3cd9
+
+validated_surfaces:
+  adoption_handshake:
+    row_count: 96
+    unexpected: 0
+    saturated: true
+  receiver_decision_receipt:
+    row_count: 8
+    unexpected: 0
+    saturated: true
+
+full_registry_confirmation:
+  workflow: core-lite-intake
+  task_id: blank
+  artifact_count: 1
+  artifact_downloaded_by_user: true
+
+release_scope:
+  includes_new_workflow: false
+  includes_predicate_expansion: false
+  includes_receiver_auto_open: false
+  includes_cross_repo_finality_claim: false
+
+non_effects:
+  may_claim_final_cross_repo_validity: false
+  may_auto_open_receiver_repo: false
+  may_bypass_receiver_declaration: false
