@@ -59,6 +59,14 @@ saturated: true
 boundary_status: validated_draft_candidate
 ```
 
+## Artifact capture check
+
+```text
+reports/stcm_v0_6_artifact_capture_status.json
+```
+
+This capture check must validate the saturation report before this record may be promoted.
+
 ## Current claim boundary
 
 ```text
@@ -74,6 +82,7 @@ docs/STCM_V0_6_PORTABLE_RECEIPT_AUTHORITY.md
 tools/closure-harness/portability.py
 tools/closure-harness/portability_fixtures.py
 tools/closure-harness/portability_predicate_check.py
+tools/closure-harness/artifact_capture_check.py
 tools/closure-harness/run_closure_harness.py
 .github/workflows/core-lite-intake.yml
 tools/task_registry.yaml
@@ -85,7 +94,8 @@ tools/task_registry.yaml
 portable_receipt_authority.md: 0314c3737c213362059f3b451ab822d3ebe059c8
 portability.py: 250fc7b9baeeac0bc4315d2a2163e4130643db50
 portability_fixtures.py: fbb6cbbcf5127accf1a95dcfe1e03b017650ae9f
+artifact_capture_check.py: 03b0001c22893db52b9258ac8f25dd2534632c63
 run_closure_harness.py: 3b33f1b109241210d057b57216b877a8a0c1de00
 core-lite-intake.yml: 08a7ff589f8c556350696c9ac12ad78c0777c0e4
-task_registry.yaml: 38e1013cf7daf620455ef8cd15be8b019f4cb756
+task_registry.yaml: 50038db2e0239ec6c4feab3defebd94a80dd8352
 ```
