@@ -1,0 +1,25 @@
+candidate:
+  id: stcm_core_lite_bootstrap_candidate
+  repo: Admissible-Existence/STCM
+  boundary: stcm_core_lite_v0_1
+  status: candidate
+  purpose: STCM bootstrap
+
+commits:
+  index: d4d01f1a623e5c47042b59b5a8dd44eeaf1f0b0f
+  saturation: 7aebc4be45269b46ab7ecdc41c196cb59f02e2ba
+  registry: 19ed6402fee25776c5d01f6debcad1b1abcf5d38
+
+result:
+  unexpected: 0
+  saturated: true
+
+tag:
+  name: stcm-core-lite-v0.1.0
+  title: STCM Core-Lite Bootstrap
+
+limits:
+  no_authority_claim: true
+  no_repo_open: true
+  no_merge: true
+  no_deploy: true
