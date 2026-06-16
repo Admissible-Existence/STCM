@@ -1,0 +1,24 @@
+receipt:
+  id: stcm_core_lite_v0_1_0_receipt
+  repo: Admissible-Existence/STCM
+  tag: stcm-core-lite-v0.1.0
+  status: pending_confirmation
+  title: STCM Core-Lite Bootstrap
+  target_commit: 7880a950c28591d304ccb931c06886d8bcf1191a
+
+basis:
+  candidate: 7880a950c28591d304ccb931c06886d8bcf1191a
+  index: d4d01f1a623e5c47042b59b5a8dd44eeaf1f0b0f
+  saturation: 7aebc4be45269b46ab7ecdc41c196cb59f02e2ba
+
+result:
+  unexpected: 0
+  saturated: true
+
+next_boundary: stcm_core_lite_v0_2
+
+limits:
+  no_authority_claim: true
+  no_repo_open: true
+  no_merge: true
+  no_deploy: true
