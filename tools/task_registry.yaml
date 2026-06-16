@@ -80,3 +80,11 @@ tasks:
     description: >
       Validates the STCM v0.8 receipt-chain link surface without claiming final
       cross-repo validity.
+
+  - id: s-check
+    kind: validator
+    entry: validators/s_check.py
+    runtime: python3
+    deps: []
+    fail_on_nonzero_exit: true
+    description: STCM wave-one bootstrap validator.
