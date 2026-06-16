@@ -1,0 +1,24 @@
+index:
+  id: stcm_core_lite_bootstrap_index
+  repo: Admissible-Existence/STCM
+  boundary: stcm_core_lite_v0_1
+  status: single_task_saturated
+  purpose: STCM bootstrap index
+
+commits:
+  planning: 885cea4f56c9648d41ef5de325a45ecfeab6fa13
+  registry: 19ed6402fee25776c5d01f6debcad1b1abcf5d38
+  fixtures: 8a4c03563e27f7641ecd0c2aa376c146bc5c5264
+  validator: 204081b5ab10b548b4af2b61a2d2d234c210bc14
+  saturation: 7aebc4be45269b46ab7ecdc41c196cb59f02e2ba
+
+result:
+  validation_mode: deterministic_fixture_basis
+  unexpected: 0
+  saturated: true
+
+limits:
+  no_authority_claim: true
+  no_repo_open: true
+  no_merge: true
+  no_deploy: true
