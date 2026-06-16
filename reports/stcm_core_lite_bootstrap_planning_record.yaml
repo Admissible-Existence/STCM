@@ -1,0 +1,31 @@
+planning:
+  id: stcm_core_lite_bootstrap_planning_record
+  repo: Admissible-Existence/STCM
+  boundary: stcm_core_lite_v0_1
+  status: planned
+  purpose: bootstrap repo validation surface
+
+basis:
+  source_readme: README.md
+  repo_role: State Transition Conservation Model closure harness
+  existing_task: closure-harness
+
+objective:
+  preserve_existing_closure_harness: true
+  create_registry: true
+  create_dispatcher: true
+  create_validator: true
+  record_saturation: true
+  create_boundary_index: true
+  create_release_candidate: true
+
+limits:
+  no_authority_claim: true
+  no_repo_open: true
+  no_merge: true
+  no_deploy: true
+
+next:
+  registry: tools/task_registry.yaml
+  dispatcher: tools/dispatch.py
+  validator: validators/stcm_alignment_check.py
