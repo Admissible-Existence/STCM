@@ -1,0 +1,35 @@
+saturation:
+  id: stcm_core_lite_bootstrap_saturation
+  repo: Admissible-Existence/STCM
+  boundary: stcm_core_lite_v0_1
+  status: single_task_saturated
+  purpose: STCM bootstrap record
+
+validated_task:
+  id: s-check
+  registry: tools/task_registry.yaml
+  validator: validators/s_check.py
+  fixtures: validators/s_fixtures.py
+
+basis:
+  planning_commit: 885cea4f56c9648d41ef5de325a45ecfeab6fa13
+  registry_commit: 19ed6402fee25776c5d01f6debcad1b1abcf5d38
+  fixtures_commit: 8a4c03563e27f7641ecd0c2aa376c146bc5c5264
+  validator_commit: 204081b5ab10b548b4af2b61a2d2d234c210bc14
+
+result:
+  validation_mode: deterministic_fixture_basis
+  row_count: 6
+  unexpected: 0
+  saturated: true
+
+covered_statuses:
+  - READY
+  - INCOMPLETE
+  - BLOCKED
+
+limits:
+  no_authority_claim: true
+  no_repo_open: true
+  no_merge: true
+  no_deploy: true
