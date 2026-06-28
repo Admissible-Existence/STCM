@@ -1,0 +1,25 @@
+name: STCM Build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  verify-stcm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run STCM build
+        run: python tools/run_stcm_build.py
+
+      - name: Verify generated outputs are current
+        run: git diff --exit-code -- dist
