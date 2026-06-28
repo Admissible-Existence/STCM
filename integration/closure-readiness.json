@@ -1,0 +1,13 @@
+{
+  "record_id": "STCM-CLOSURE-READINESS-0001",
+  "status": "CLOSURE-READINESS-SEED",
+  "requires": [
+    "STCM-AE-INTAKE-0001",
+    "closure-harness dispatcher identity preserved",
+    "generated AE intake result"
+  ],
+  "non_claims": [
+    "Closure readiness is not execution authority.",
+    "Closure readiness is not commit-time admissibility."
+  ]
+}
