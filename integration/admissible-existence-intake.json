@@ -1,0 +1,20 @@
+{
+  "intake_id": "STCM-AE-INTAKE-0001",
+  "repository": "Admissible-Existence/STCM",
+  "source_repositories": [
+    "Admissible-Existence/RTG",
+    "Admissible-Existence/IICT",
+    "Admissible-Existence/DC"
+  ],
+  "purpose": "Bind closure-harness saturation to RTG, IICT, and DC seed outputs without changing STCM dispatcher identity.",
+  "inputs": [
+    "RTG bridge seed",
+    "IICT graph protocol seed",
+    "DC multi-case fixture seed"
+  ],
+  "non_claims": [
+    "STCM does not authorize execution.",
+    "Closure harness saturation is not commit-time admissibility.",
+    "Integration intake does not replace source repository verification."
+  ]
+}
