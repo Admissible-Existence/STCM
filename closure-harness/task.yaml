@@ -1,0 +1,6 @@
+task_id: closure-harness
+entrypoint: closure-harness/run_closure_harness.py
+invoked_by: core-lite-intake.yml
+creates_workflow: false
+manual_tasks_remaining: false
+status: task_descriptor_ready
