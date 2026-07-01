@@ -1,0 +1,21 @@
+policy_id: stcm-closure-completeness-v1
+stages:
+  low:
+    required_fields:
+      - transition_id
+      - stage
+      - expected
+      - basis
+    terminal_states:
+      - SATISFIED
+      - PROVEN_UNSATISFIABLE
+  medium:
+    required_fields:
+      - transition_id
+      - stage
+      - expected
+      - basis
+    terminal_states:
+      - SATISFIED
+      - PROVEN_UNSATISFIABLE
+status: policy_ready
