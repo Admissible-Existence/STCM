@@ -1,4 +1,6 @@
-policy_id: stcm-closure-completeness-v1
+policy_id: stcm-closure-completeness-v2
+policy_version: 2.0.0
+status: policy_active
 stages:
   low:
     required_fields:
@@ -9,13 +11,42 @@ stages:
     terminal_states:
       - SATISFIED
       - PROVEN_UNSATISFIABLE
+    merge_policy:
+      minimum_nodes: 1
+      require_distinct_receipt_ids: true
+      require_merge_proof_when_nodes_exceed: 1
   medium:
     required_fields:
       - transition_id
       - stage
       - expected
       - basis
+      - authority_current
     terminal_states:
       - SATISFIED
       - PROVEN_UNSATISFIABLE
-status: policy_ready
+    merge_policy:
+      minimum_nodes: 1
+      require_distinct_receipt_ids: true
+      require_merge_proof_when_nodes_exceed: 1
+  high:
+    required_fields:
+      - transition_id
+      - stage
+      - expected
+      - basis
+      - authority_current
+      - consent_resolved
+      - commit_time_reconstruction
+    terminal_states:
+      - SATISFIED
+      - PROVEN_UNSATISFIABLE
+    merge_policy:
+      minimum_nodes: 2
+      require_distinct_receipt_ids: true
+      require_merge_proof_when_nodes_exceed: 1
+non_claims:
+  execution_authorized: false
+  publication_authorized: false
+  certification_authority_created: false
+  universal_mathematical_closure: false
