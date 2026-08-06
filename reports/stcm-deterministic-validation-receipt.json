@@ -1,0 +1,27 @@
+{
+  "authority_effect": false,
+  "hosted_validation_state": "BLOCKED_ACTIONS_EVENT_DELIVERY",
+  "implementation_commits": [
+    "1d9872136a11df3031be8d1f37f99cda11a8f061",
+    "9d1b0412a20ac070d968d65a02826dc2f56f247a",
+    "2ef458caaabe2e037b7f62998c910a828761e7dd",
+    "2f11e5805e9dc163a797db9bbe2c984e81c59972",
+    "69abee9d0a2e9bcd9cbcddd92ba72c613b4fe6a5"
+  ],
+  "matched": 6,
+  "receipt_sha256": "2fd492cf9cbfd12ad5e7c5bc808bf5a50f44f9eb67051b5c9763849583de0c73",
+  "results": [
+    {"transition_id":"PN-001","actual_verdict":"SATISFIED","expected_verdict":"SATISFIED","matched":true,"reason":"closure_policy_satisfied"},
+    {"transition_id":"PN-002","actual_verdict":"PROVEN_UNSATISFIABLE","expected_verdict":"PROVEN_UNSATISFIABLE","matched":true,"reason":"missing_required_field"},
+    {"transition_id":"PN-003","actual_verdict":"SATISFIED","expected_verdict":"SATISFIED","matched":true,"reason":"closure_policy_satisfied"},
+    {"transition_id":"PN-004","actual_verdict":"PROVEN_UNSATISFIABLE","expected_verdict":"PROVEN_UNSATISFIABLE","matched":true,"reason":"authority_not_current"},
+    {"transition_id":"PN-005","actual_verdict":"SATISFIED","expected_verdict":"SATISFIED","matched":true,"reason":"closure_policy_satisfied"},
+    {"transition_id":"PN-006","actual_verdict":"PROVEN_UNSATISFIABLE","expected_verdict":"PROVEN_UNSATISFIABLE","matched":true,"reason":"merge_proof_source_mismatch"}
+  ],
+  "saturated": true,
+  "schema_version": "1.0.0",
+  "task_id": "STCM-PRINCIPLE-COMPLETENESS-001",
+  "unexpected": 0,
+  "validated_commit": "79af095ee43a76349d2e155d7608f631b703298f",
+  "validation_type": "deterministic_external_replay"
+}
