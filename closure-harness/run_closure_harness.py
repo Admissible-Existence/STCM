@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -14,14 +15,7 @@ from fixtures import records  # noqa: E402
 
 
 def expected_ok(record: dict, verdict: dict) -> bool:
-    expected = record.get("expected")
-    if expected == "CLOSED":
-        if record.get("basis") in (None, ""):
-            return verdict["verdict"] == "PROVEN_UNSATISFIABLE"
-        return verdict["verdict"] == "SATISFIED"
-    if expected == "BLOCKED":
-        return verdict["verdict"] == "PROVEN_UNSATISFIABLE"
-    return False
+    return verdict["verdict"] == record.get("expected_verdict")
 
 
 def main() -> int:
@@ -31,21 +25,10 @@ def main() -> int:
         verdict = decide(record)
         matched = expected_ok(record, verdict)
         ok = ok and matched
-        results.append({
-            "transition_id": record.get("transition_id"),
-            "stage": record.get("stage"),
-            "expected": record.get("expected"),
-            "verdict": verdict,
-            "matched": matched,
-        })
-    report = {
-        "task_id": "closure-harness",
-        "total": len(results),
-        "matched": sum(1 for item in results if item["matched"]),
-        "unexpected": sum(1 for item in results if not item["matched"]),
-        "saturated": ok,
-        "results": results,
-    }
+        results.append({"transition_id": record.get("transition_id"), "stage": record.get("stage"), "expected": record.get("expected"), "expected_verdict": record.get("expected_verdict"), "verdict": verdict, "matched": matched})
+    report = {"task_id":"closure-harness","policy_id":"stcm-closure-completeness-v2","total":len(results),"matched":sum(1 for item in results if item["matched"]),"unexpected":sum(1 for item in results if not item["matched"]),"saturated":ok,"authority_effect":False,"results":results}
+    canonical = json.dumps(report, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    report["receipt_sha256"] = hashlib.sha256(canonical).hexdigest()
     out = ROOT / "dist" / "closure-harness-report.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
