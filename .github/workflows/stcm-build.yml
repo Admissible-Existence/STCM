@@ -1,10 +1,18 @@
 name: STCM Build
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches:
       - main
+    paths:
+      - 'closure-harness/**'
+      - 'docs/STCM_MIRROR_HANDOFF.md'
+      - '.github/workflows/stcm-build.yml'
+
+permissions:
+  contents: read
 
 jobs:
   verify-stcm:
@@ -21,5 +29,17 @@ jobs:
       - name: Run STCM build
         run: python tools/run_stcm_build.py
 
+      - name: Run closure policy and PN harness
+        run: |
+          python -m py_compile closure-harness/closure.py closure-harness/fixtures.py closure-harness/run_closure_harness.py
+          python closure-harness/run_closure_harness.py
+          python -m json.tool dist/closure-harness-report.json >/dev/null
+
       - name: Verify generated outputs are current
         run: git diff --exit-code -- dist
+
+      - name: Upload closure harness receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: stcm-closure-harness-receipt
+          path: dist/closure-harness-report.json
