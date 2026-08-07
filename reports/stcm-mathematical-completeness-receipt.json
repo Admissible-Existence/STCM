@@ -1,0 +1,55 @@
+{
+  "bounded_closure_harness_receipt_present": true,
+  "dependency_derivation": true,
+  "errors": [],
+  "execution_authorized": false,
+  "falsification_and_limits": true,
+  "files": {
+    "docs/FALSIFICATION_AND_LIMITS.md": {
+      "bytes": 3496,
+      "sha256": "972067483f4b82e6435917ee6248cd39985060f393c7bdf8d8296bcd29cb1926"
+    },
+    "docs/MATHEMATICAL_NOTATION.md": {
+      "bytes": 4782,
+      "sha256": "22339f12dc2c1336ea8c5c001734178b60287eca2bc76f6b526b0729df850072"
+    },
+    "docs/STATE_TRANSITION_CONSERVATION_MODEL.md": {
+      "bytes": 25708,
+      "sha256": "f06dc7e843bcf7cc3d75ccf8669cc8f1555677885c61d525a3c07f8d89256e7b"
+    },
+    "docs/STCM_MIRROR_HANDOFF.md": {
+      "bytes": 4617,
+      "sha256": "b85e4501399f3a3eeaaad77a74eba5cca8f7df9ee09d32d7c68b594a11c4d10a"
+    },
+    "docs/WHOLE_REPO_THEORY_MAP.md": {
+      "bytes": 2995,
+      "sha256": "4d4bae40f9d3a5d97d7257e973b1349c92be6af5e4dc0fe293dc49a3bd8cd1d2"
+    },
+    "formalism/dependency-graph.yaml": {
+      "bytes": 2422,
+      "sha256": "c537bb94fd6c4291e573b1aaf97522d1a7e295f1a4b17f47cdd4514d705e1239"
+    },
+    "formalism/principle-registry.yaml": {
+      "bytes": 2396,
+      "sha256": "c4c0ff9d137d984a4bcb33d92cd7dd0853615f75ad8c1e8fa8452e72d13b897e"
+    },
+    "formalism/proof-candidates.yaml": {
+      "bytes": 3497,
+      "sha256": "c3fb356a909bb7761ee6d007e065e4520252bcfc0007f8132972a44c55fb6b9b"
+    },
+    "reports/stcm-deterministic-validation-receipt.json": {
+      "bytes": 1651,
+      "sha256": "c161c2943f030dddad73ffc02469df4671e971e27ae5708e1d9e4f0b9c7b8956"
+    }
+  },
+  "fixture_saturation_is_universal_proof": false,
+  "formal_declaration": true,
+  "goal_id": "STCM-MATHEMATICAL-COMPLETENESS-002",
+  "mathematical_notation_and_derivation": true,
+  "proof_candidate_is_proof": false,
+  "proof_candidates": "6/6 registered candidate_not_proven",
+  "repository": "Admissible-Existence/STCM",
+  "schema_version": "1.0.0",
+  "valid": true,
+  "whole_repo_theory": true
+}
