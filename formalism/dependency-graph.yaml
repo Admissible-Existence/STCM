@@ -1,0 +1,64 @@
+schema_version: 1.0.0
+repository: Admissible-Existence/STCM
+goal_id: STCM-MATHEMATICAL-COMPLETENESS-002
+nodes:
+  - id: transition-state
+    source: docs/STATE_TRANSITION_CONSERVATION_MODEL.md#1-core-claim
+  - id: receipt-relationship
+    source: docs/STATE_TRANSITION_CONSERVATION_MODEL.md#3-receipt-relational-state-transition-principle
+  - id: finite-node-capacity
+    source: docs/STATE_TRANSITION_CONSERVATION_MODEL.md#6-finite-node-capacity-principle
+  - id: hash-scope
+    source: docs/STATE_TRANSITION_CONSERVATION_MODEL.md#12-hash-scoped-node-execution
+  - id: route-predicate
+    source: docs/STATE_TRANSITION_CONSERVATION_MODEL.md#16-non-ignored-path-principle
+  - id: moment-bound-values
+    source: docs/STATE_TRANSITION_CONSERVATION_MODEL.md#11-moment-bound-evaluation-principle
+  - id: compute-accounting
+    source: docs/STATE_TRANSITION_CONSERVATION_MODEL.md#18-compute-conservation
+  - id: conservation-record
+    source: docs/STATE_TRANSITION_CONSERVATION_MODEL.md#20-state-transition-conservation-record
+  - id: closure-harness
+    source: closure-harness/run_closure_harness.py
+edges:
+  - from: receipt-relationship
+    to: transition-state
+    relation: conditions
+  - from: hash-scope
+    to: route-predicate
+    relation: supplies_match_term
+  - from: receipt-relationship
+    to: route-predicate
+    relation: supplies_sufficiency_term
+  - from: transition-state
+    to: route-predicate
+    relation: supplies_transition_allowed_term
+  - from: finite-node-capacity
+    to: compute-accounting
+    relation: bounds_active_capacity
+  - from: route-predicate
+    to: compute-accounting
+    relation: determines_activated_subset
+  - from: moment-bound-values
+    to: transition-state
+    relation: bounds_validity_at_time
+  - from: transition-state
+    to: conservation-record
+    relation: requires_closure_record
+  - from: compute-accounting
+    to: conservation-record
+    relation: contributes_capacity_terms
+  - from: closure-harness
+    to: conservation-record
+    relation: tests_bounded_closure_cases
+bounded_derivation_order:
+  - receipt-relationship
+  - hash-scope
+  - moment-bound-values
+  - finite-node-capacity
+  - transition-state
+  - route-predicate
+  - compute-accounting
+  - conservation-record
+  - closure-harness
+authority_boundary: The graph formalizes STCM dependencies; it does not convert conservation accounting or harness saturation into execution authority or universal proof.
