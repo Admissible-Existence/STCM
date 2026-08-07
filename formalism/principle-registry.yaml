@@ -1,0 +1,34 @@
+schema_version: 1.0.0
+repository: Admissible-Existence/STCM
+goal_id: STCM-MATHEMATICAL-COMPLETENESS-002
+source_theory: docs/STATE_TRANSITION_CONSERVATION_MODEL.md
+harness: closure-harness/run_closure_harness.py
+authority_boundary:
+  proof_candidate_is_proof: false
+  saturated_fixture_run_is_universal_closure: false
+  validation_creates_execution_authority: false
+principles:
+  - id: STCM-CONSERVATION-CLOSURE-001
+    declaration: A governed transition becomes coherent only when its required receipt, activation, authority, evidence, phase, entropy, compute, and resulting-receipt relationships close into a conservation record.
+    source: docs/STATE_TRANSITION_CONSERVATION_MODEL.md#2-state-transition-conservation-principle
+    maturity: candidate_not_proven
+  - id: STCM-FINITE-CAPACITY-002
+    declaration: A Prime Node remains coherent only while governed load Lg is within coherent capacity Cg; excess load requires a bounded structural response or coherence degrades.
+    source: docs/STATE_TRANSITION_CONSERVATION_MODEL.md#7-mathematical-necessity-of-expansion
+    maturity: candidate_not_proven
+  - id: STCM-HASH-ACTIVATION-003
+    declaration: A Prime Node engages only within declared hash scope; non-matching inputs preserve node capacity through non-engagement.
+    source: docs/STATE_TRANSITION_CONSERVATION_MODEL.md#12-hash-scoped-node-execution
+    maturity: candidate_not_proven
+  - id: STCM-ROUTING-004
+    declaration: A governed route exists only when hash match, receipt sufficiency, and transition permission jointly hold; match multiplicity determines none, singular, or branched routing posture.
+    source: docs/STATE_TRANSITION_CONSERVATION_MODEL.md#16-non-ignored-path-principle
+    maturity: candidate_not_proven
+  - id: STCM-COMPUTE-CONSERVATION-005
+    declaration: Transition compute/governance capacity is accounted as active, available, released, and blocked capacity, with cost scaling to activated nodes rather than total nodes under the stated model.
+    source: docs/STATE_TRANSITION_CONSERVATION_MODEL.md#18-compute-conservation
+    maturity: candidate_not_proven
+  - id: STCM-MOMENT-BOUND-006
+    declaration: A transition result is valid for the evaluated moment unless the required values are revalidated at a later moment.
+    source: docs/STATE_TRANSITION_CONSERVATION_MODEL.md#11-moment-bound-evaluation-principle
+    maturity: candidate_not_proven
