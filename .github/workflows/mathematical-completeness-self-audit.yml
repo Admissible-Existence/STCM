@@ -1,0 +1,52 @@
+name: Mathematical completeness self-audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'formalism/**'
+      - 'docs/STATE_TRANSITION_CONSERVATION_MODEL.md'
+      - 'docs/WHOLE_REPO_THEORY_MAP.md'
+      - 'docs/MATHEMATICAL_NOTATION.md'
+      - 'docs/FALSIFICATION_AND_LIMITS.md'
+      - 'docs/STCM_MIRROR_HANDOFF.md'
+      - 'tools/check_mathematical_completeness.py'
+      - '.github/workflows/mathematical-completeness-self-audit.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stcm-mathematical-completeness
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run existing STCM closure validation
+        run: |
+          python tools/run_stcm_build.py
+          python closure-harness/run_closure_harness.py
+          git diff --exit-code -- dist
+      - name: Validate mathematical completeness package
+        run: python tools/check_mathematical_completeness.py
+      - name: Persist mathematical completeness receipt
+        run: |
+          if [ -z "$(git status --porcelain -- reports/stcm-mathematical-completeness-receipt.json)" ]; then
+            echo 'receipt unchanged'
+            exit 0
+          fi
+          git config user.name 'stcm-mathematical-completeness-auditor'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add reports/stcm-mathematical-completeness-receipt.json
+          git commit -m 'Persist STCM mathematical completeness receipt'
+          git push
+      - name: Upload mathematical completeness receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: stcm-mathematical-completeness-receipt
+          path: reports/stcm-mathematical-completeness-receipt.json
+          if-no-files-found: error
