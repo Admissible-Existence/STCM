@@ -1,0 +1,49 @@
+schema_version: 1.0.0
+repository: Admissible-Existence/STCM
+goal_id: STCM-MATHEMATICAL-COMPLETENESS-002
+source_theory: docs/STATE_TRANSITION_CONSERVATION_MODEL.md
+proof_candidate_is_accepted_proof: false
+candidates:
+  - id: STCM-PC-001
+    principle: STCM-CONSERVATION-CLOSURE-001
+    name: Conservation-record closure necessity
+    statement: Under the declared STCM coherence definition, a transition cannot serve as a coherent receipt basis for a subsequent governed transition unless every required conservation term is either accounted, explicitly not applicable, refused, or otherwise closed in the resulting record.
+    status: candidate_not_proven
+    derivation_anchor: docs/MATHEMATICAL_NOTATION.md#conservation-closure
+    falsification_anchor: docs/FALSIFICATION_AND_LIMITS.md#stcm-pc-001
+  - id: STCM-PC-002
+    principle: STCM-FINITE-CAPACITY-002
+    name: Finite governed-capacity threshold
+    statement: If governed load Lg exceeds coherent capacity Cg and no bounded structural response changes load or capacity, continued coherent operation is not guaranteed by the STCM capacity model and persistent overload predicts coherence failure.
+    status: candidate_not_proven
+    derivation_anchor: docs/MATHEMATICAL_NOTATION.md#finite-capacity
+    falsification_anchor: docs/FALSIFICATION_AND_LIMITS.md#stcm-pc-002
+  - id: STCM-PC-003
+    principle: STCM-HASH-ACTIVATION-003
+    name: Hash-scoped selective activation
+    statement: Under strict hash-scope non-engagement, only nodes whose declared scope matches the transition posture enter the candidate active set; non-matching nodes preserve their availability for other transitions.
+    status: candidate_not_proven
+    derivation_anchor: docs/MATHEMATICAL_NOTATION.md#hash-scoped-activation
+    falsification_anchor: docs/FALSIFICATION_AND_LIMITS.md#stcm-pc-003
+  - id: STCM-PC-004
+    principle: STCM-ROUTING-004
+    name: Non-ignored route existence
+    statement: Within the stated STCM routing model, a candidate path is governably traversable only when hash match, receipt sufficiency, and transition permission all hold for the path step.
+    status: candidate_not_proven
+    derivation_anchor: docs/MATHEMATICAL_NOTATION.md#routing-predicate
+    falsification_anchor: docs/FALSIFICATION_AND_LIMITS.md#stcm-pc-004
+  - id: STCM-PC-005
+    principle: STCM-COMPUTE-CONSERVATION-005
+    name: Selective-activation compute accounting
+    statement: For the modeled transition, total bounded compute/governance capacity can be partitioned into active, available, released, and blocked terms, and strict selective activation limits transition-specific active cost to the activated subset.
+    status: candidate_not_proven
+    derivation_anchor: docs/MATHEMATICAL_NOTATION.md#compute-accounting
+    falsification_anchor: docs/FALSIFICATION_AND_LIMITS.md#stcm-pc-005
+  - id: STCM-PC-006
+    principle: STCM-MOMENT-BOUND-006
+    name: Moment-bound transition validity
+    statement: When transition predicates depend on time-indexed observed and required values, a result established at time t does not establish the same result at t2 unless the required predicates remain equal or are revalidated.
+    status: candidate_not_proven
+    derivation_anchor: docs/MATHEMATICAL_NOTATION.md#moment-bound-validity
+    falsification_anchor: docs/FALSIFICATION_AND_LIMITS.md#stcm-pc-006
+maturity_boundary: Closure-harness saturation is bounded evidence for committed fixtures. It is not an accepted universal proof of any candidate above.
