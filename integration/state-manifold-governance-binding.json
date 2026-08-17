@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "integration_id": "STCM-RELATIONAL-GOVERNANCE-MATH-ALIGNMENT-001",
+  "source": {
+    "repository": "Admissible-Existence/AE",
+    "goal_id": "AE-AUTO-0011",
+    "math": "docs/STATE_MANIFOLD_RELATIONAL_GOVERNANCE_MATHEMATICS.md",
+    "handoff": "docs/STATE_MANIFOLD_RELATIONAL_GOVERNANCE_MIRROR_HANDOFF.md",
+    "validation_state": "PENDING_MACHINE_OWNED_TERMINAL_DERIVATION"
+  },
+  "consumer": {
+    "repository": "Admissible-Existence/STCM",
+    "handoff": "STCM_MIRROR_HANDOFF.md",
+    "alignment": "formalism/state-manifold-governance-alignment.md"
+  },
+  "required_invariants": [
+    "receipt_is_evidence_not_causal_identity",
+    "snapshots_do_not_imply_causal_relation",
+    "refinement_preserves_established_coarse_transition",
+    "governance_is_governor_indexed",
+    "no_implicit_lineage_taint",
+    "time_is_evidence_unless_explicitly_governing",
+    "classification_is_distinct_from_enforcement"
+  ],
+  "credential_requirement": "NONE",
+  "github_token_runtime_authority": "NONE",
+  "non_tv_tvc_secret_or_token_allowed": false,
+  "status": "BOUND_PENDING_EXACT_TERMINAL_AE_MATH"
+}
