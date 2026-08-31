@@ -53,3 +53,24 @@ The first two source/integration surfaces should be installed now; validator/rep
 ## Validation and release condition
 
 The claim releases only after the exact validated AE-AUTO-0011 mathematical result is bound, STCM receipt/moment definitions satisfy the invariants above, deterministic validation passes, and no conflicting STCM semantics remain. Publication/release authority is separate.
+
+## COSV adoption — 2026-08-31
+
+Current structured task surface:
+
+```text
+STCM-RELATIONAL-GOVERNANCE-MATH-ALIGNMENT-001 40000000101000
+```
+
+The single blocker is the exact terminal validated AE-AUTO-0011 mathematical result. STCM source/binding surfaces exist, but validator/report maturity remains intentionally deferred until that canonical source is terminal.
+
+Installed COSV surfaces:
+
+```text
+data/cosv/task-vector-index.json
+data/cosv/task-vectors/STCM-RELATIONAL-GOVERNANCE-MATH-ALIGNMENT-001.json
+tools/check_cosv_task_projection.py
+tests/test_cosv_task_projection.py
+```
+
+Repository active task surface audit: complete for the current structured task set. Repository VECTOR_PRESENT is not claimed until repository-local validation passes and the central adoption authority promotes it. Authority effect: NONE.
