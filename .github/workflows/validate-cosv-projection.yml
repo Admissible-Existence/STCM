@@ -1,0 +1,41 @@
+name: Validate COSV Projection
+
+on:
+  pull_request:
+    paths:
+      - "STCM_MIRROR_HANDOFF.md"
+      - "integration/state-manifold-governance-binding.json"
+      - "data/cosv/**"
+      - "tools/check_cosv_task_projection.py"
+      - "tests/test_cosv_task_projection.py"
+      - ".github/workflows/validate-cosv-projection.yml"
+  push:
+    branches: [main]
+    paths:
+      - "STCM_MIRROR_HANDOFF.md"
+      - "integration/state-manifold-governance-binding.json"
+      - "data/cosv/**"
+      - "tools/check_cosv_task_projection.py"
+      - "tests/test_cosv_task_projection.py"
+      - ".github/workflows/validate-cosv-projection.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate COSV projection
+        run: |
+          python tools/check_cosv_task_projection.py
+          python -m unittest -v tests.test_cosv_task_projection
+          echo "authority_effect=NONE"
+          echo "github_token_runtime_authority=NONE"
