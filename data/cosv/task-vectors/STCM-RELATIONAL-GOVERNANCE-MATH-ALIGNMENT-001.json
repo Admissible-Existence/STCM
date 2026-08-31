@@ -1,0 +1,43 @@
+{
+  "identity": "Admissible-Existence/STCM:task:STCM-RELATIONAL-GOVERNANCE-MATH-ALIGNMENT-001",
+  "profile": "task.v1",
+  "level": "task",
+  "vector": "40000000101000",
+  "evidence_refs": [
+    "STCM_MIRROR_HANDOFF.md",
+    "integration/state-manifold-governance-binding.json",
+    "formalism/state-manifold-governance-alignment.md",
+    "Admissible-Existence/AE/docs/STATE_MANIFOLD_RELATIONAL_GOVERNANCE_MIRROR_HANDOFF.md"
+  ],
+  "observed_at": "2026-08-31T08:22:00-05:00",
+  "exact_metrics": {
+    "symbol_order": "LRUIVGOCMTBEAP",
+    "lifecycle": "CLAIMED_INTEGRATION",
+    "archive_ready": false,
+    "unassigned_work": 0,
+    "chat_owned_implementation": 0,
+    "chat_owned_validation": 0,
+    "chat_owned_integration": 0,
+    "chat_owned_observation": 0,
+    "chat_owned_credentials": 0,
+    "canonical_owner_installed": true,
+    "thread_required": false,
+    "blocker_count": 1,
+    "evidence_complete": false,
+    "activated": false,
+    "propagated": false
+  },
+  "metric_evidence": {
+    "lifecycle": "STCM_MIRROR_HANDOFF.md claim_state=CLAIMED_FOR_INTEGRATION",
+    "archive_ready": "release condition not satisfied",
+    "unassigned_work": "STCM repository owner and upstream AE machine owner are installed",
+    "chat_owned_counts": "no chat-owned execution/validation/credential authority",
+    "canonical_owner_installed": "canonical STCM handoff and integration binding exist",
+    "thread_required": "repository-native state is sufficient for continuation",
+    "blocker_count": "AE-AUTO-0011 terminal validated mathematics not yet observed",
+    "evidence_complete": "validator/report maturity intentionally deferred to terminal AE source",
+    "activated": "publication/release authority is separate and false",
+    "propagated": "terminal-source downstream reconciliation not complete"
+  },
+  "authority_effect": "NONE"
+}
