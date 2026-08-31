@@ -1,0 +1,27 @@
+{
+  "schema": "stegverse.stcm.cosv-task-vector-index/v1",
+  "repository": "Admissible-Existence/STCM",
+  "profile": "task.v1",
+  "notation": "L R U I V G O C M T B E A P",
+  "width": 14,
+  "canonical_profile_ref": "StegVerse-Labs/.github/management/COSV_PROFILE_V1.json",
+  "observed_at": "2026-08-31T08:22:00-05:00",
+  "authority_effect": "NONE",
+  "tasks": [
+    {
+      "task_id": "STCM-RELATIONAL-GOVERNANCE-MATH-ALIGNMENT-001",
+      "state_ref": "STCM_MIRROR_HANDOFF.md",
+      "binding_ref": "integration/state-manifold-governance-binding.json",
+      "vector_ref": "data/cosv/task-vectors/STCM-RELATIONAL-GOVERNANCE-MATH-ALIGNMENT-001.json",
+      "vector": "40000000101000",
+      "binding_mode": "EXTERNAL_PROJECTION_READ_ONLY"
+    }
+  ],
+  "coverage": {
+    "current_structured_tasks_audited": 1,
+    "current_structured_tasks_projected": 1,
+    "current_structured_task_gap": 0,
+    "repository_active_task_surface_audit_complete": true,
+    "repository_vector_present_claimed": false
+  }
+}
