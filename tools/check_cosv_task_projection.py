@@ -14,9 +14,17 @@ assert m["lifecycle"]=="CLAIMED_INTEGRATION"
 assert m["blocker_count"]==1
 assert bind["source"]["goal_id"]=="AE-AUTO-0011"
 assert bind["source"]["validation_state"]=="PENDING_MACHINE_OWNED_TERMINAL_DERIVATION"
-assert bind["status"]=="BOUND_PENDING_EXACT_TERMINAL_AE_MATH"
+assert bind["status"]=="BOUND_PENDING_EXACT_TERMINAL_AE_MATH_AND_AUTHORITY_TIME_REBIND"
+assert bind["governance_coordinate"]["canonical"]=="Authority × Time"
+assert bind["governance_coordinate"]["formal"]=="G=(Authority,Time)"
+assert bind["governance_coordinate"]["receipt_effect"]=="EVIDENCE_ONLY"
+required=set(bind["required_invariants"])
+assert "governance_coordinate_is_authority_times_time" in required
+assert "elapsed_time_alone_does_not_create_destroy_or_transfer_authority" in required
+assert "clock_observations_are_not_authority" in required
+assert "receipt_is_evidence_not_causal_identity_or_governance_coordinate" in required
 assert m["evidence_complete"] is False
 assert m["activated"] is False and m["propagated"] is False
 assert idx["coverage"]["repository_active_task_surface_audit_complete"] is True
 assert idx["coverage"]["repository_vector_present_claimed"] is False
-print("STCM_COSV_PROJECTION_PASS tasks=1 blockers=1 repository_vector_present=false")
+print("STCM_COSV_PROJECTION_PASS tasks=1 blockers=1 authority_time_coordinate=true repository_vector_present=false")
