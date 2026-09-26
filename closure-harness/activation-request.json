@@ -1,0 +1,8 @@
+{
+  "task_id": "STCM-PRINCIPLE-COMPLETENESS-001",
+  "requested_at": "2026-08-06T22:19:00Z",
+  "base_commit": "79af095ee43a76349d2e155d7608f631b703298f",
+  "workflow": "STCM Build",
+  "required_artifact": "stcm-closure-harness-receipt",
+  "authority_effect": false
+}
