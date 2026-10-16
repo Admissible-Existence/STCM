@@ -118,17 +118,19 @@ This is `STCM-PC-006` and formalizes the source statement that transition validi
 
 The PN-001..PN-006 closure fixtures and hosted harness provide bounded evidence for the implemented closure predicate. They do not prove the capacity law, routing law, compute relation, or conservation principle universally. All six proof candidates remain `candidate_not_proven`.
 
-## 7. G7: continuity lemma (missing, forked, stale links) [NEW, discrete; generalizes STCM-L fixtures]
+## G7: continuity lemma (missing, forked, stale links) [NEW, discrete; generalizes STCM-L fixtures]
 
 Status: **DRAFT / candidate derivations.** Prepared 2026-10-16 by Grok Bot for owner and practitioner review.
 
-> **Disclaimer.** This is a working draft. It is not a statement of truth, not a legal or patentability determination, and grants no execution, release, publication or standing authority. Every item is a candidate for owner/practitioner review. Nothing here has been added to any repository.
+> **Disclaimer.** This is a working draft. It is not a statement of truth, not a legal or patentability determination, and grants no execution, release, publication or standing authority. Every item is a candidate for owner/practitioner review. Status: draft candidate text for review; not accepted mathematics. The mathematics is a supporting derivation in standard notation and does not claim or define StegVerse terminology.
 
 Each step is tagged:
 - **[STD]**: follows from a standard published result (cited);
 - **[NEW]**: new derivation written in this draft (elementary, but not yet reviewed);
 - **[ASSUME]**: explicit assumption;
 - **[INTERP]**: interpretation or mapping, not a derivation.
+
+Assumptions A1 (discrete states), A2 (deterministic processor) and lemma G3 (terminal-receipt match) are stated on the companion page: https://admissibility.stegverse.org/formalisms/reconstructable-singularity-receipt-chain/
 
 ### Relation to the existing v0.4 prior-receipt linking fixtures
 
@@ -172,7 +174,7 @@ The proof sketch below names G3 for uniqueness of the backward walk except with 
 **Statement (under A4).**
 1. *Missing link.* If, walking back from \(R_m\) by predecessor references, some referenced \(R_{j-1}\) is absent from \(\mathcal Q\) (and from regenerable data), the gap at index \(j-1\) is detected and localized.
 2. *Fork.* If two distinct records claim the same predecessor and the same index, at most one lies on the path to the trusted \(R_m\) unless a collision exists. The fork is detected and the off-path branch is identified.
-3. *Stale or out-of-sequence binding.* A record claiming index \(j\) whose predecessor's index is not \(j-1\), or whose predecessor is not the current head when appended, violates the index field bound in the hash. It is detected (cf. STCM-L verdicts: missing prior, hash mismatch, stale, superseded, competing chains).
+3. *Stale or out-of-sequence binding.* A record claiming index \(j\) whose predecessor's index is not \(j-1\), or violates the index field bound in the hash, and any record not on the backward walk is detected as off-path relative to the trusted head \((m,R_m)\). It is detected (cf. STCM-L verdicts: missing prior, hash mismatch, stale, superseded, competing chains).
 4. *Limit.* Without a trusted head index \(m\), truncation of the tail (dropping \(R_{m'}\ldots R_m\)) is undetectable. Trusted anchoring of the head is necessary.
 
 **Proof sketch.**
