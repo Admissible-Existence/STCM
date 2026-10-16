@@ -117,3 +117,71 @@ This is `STCM-PC-006` and formalizes the source statement that transition validi
 ## Proof maturity
 
 The PN-001..PN-006 closure fixtures and hosted harness provide bounded evidence for the implemented closure predicate. They do not prove the capacity law, routing law, compute relation, or conservation principle universally. All six proof candidates remain `candidate_not_proven`.
+
+## 7. G7: continuity lemma (missing, forked, stale links) [NEW, discrete; generalizes STCM-L fixtures]
+
+Status: **DRAFT / candidate derivations.** Prepared 2026-10-16 by Grok Bot for owner and practitioner review.
+
+> **Disclaimer.** This is a working draft. It is not a statement of truth, not a legal or patentability determination, and grants no execution, release, publication or standing authority. Every item is a candidate for owner/practitioner review. Nothing here has been added to any repository.
+
+Each step is tagged:
+- **[STD]**: follows from a standard published result (cited);
+- **[NEW]**: new derivation written in this draft (elementary, but not yet reviewed);
+- **[ASSUME]**: explicit assumption;
+- **[INTERP]**: interpretation or mapping, not a derivation.
+
+### Relation to the existing v0.4 prior-receipt linking fixtures
+
+This candidate sits next to the existing v0.4 prior-receipt linking fixtures. Those fixtures are specified in `docs/STCM_V0_4_SEQUENTIAL_RECEIPT_LINEAGE.md` (§ Implemented v0.4 fixtures) and implemented in `tools/closure-harness/lineage_fixtures.py`. Each fixture binds `claimed_prior_receipt_id`, `claimed_prior_receipt_hash`, and `sequence_index` to a `prior_receipt` (the predecessor) and, when continuity is claimed, to a supplied `chain_head`. The heading above records that G7 generalizes those STCM-L fixtures. The correspondence is:
+
+| G7 case | v0.4 fixture | Fixture verdict and write-up |
+|---|---|---|
+| On-path predecessor link | `lin_bound` | `BOUND` — `docs/STCM_V0_4_SEQUENTIAL_RECEIPT_LINEAGE.md`, "1. Prior receipt binds" |
+| Missing link | `lin_missing` | `MISSING_PRIOR` — same document, "2. Missing prior receipt" |
+| Fork (two records claim the same predecessor and the same index) | `lin_conflict_competing` | `CONFLICT` — same document, "6. Competing receipt chains" |
+| Stale or out-of-sequence binding | `lin_stale` | `STALE` — same document, "4. Stale prior receipt" |
+| Hash mismatch named with the STCM-L verdicts in the statement below | `lin_hash_mismatch` | `CONFLICT` — same document, "3. Prior receipt hash mismatch" |
+| Superseded predecessor named with those verdicts | `lin_superseded` | `SUPERSEDED` — same document, "5. Superseded prior receipt" |
+| Tail truncation without a trusted head index | the v0.4 harness supplies `chain_head` on continuity claims (`tools/closure-harness/lineage_fixtures.py`); a green v0.4 run leaves cryptographic proof beyond fixture hash comparison as a later boundary (`docs/STCM_V0_4_SEQUENTIAL_RECEIPT_LINEAGE.md`, "What v0.4 does not prove yet") | undetectable without trusted head index \(m\) (limit 4 below) |
+
+### Citations
+
+| Ref | Source | Path | Commit |
+|---|---|---|---|
+| STCM-L | STCM v0.4 sequential receipt lineage | `Admissible-Existence/STCM/docs/STCM_V0_4_SEQUENTIAL_RECEIPT_LINEAGE.md` | `abf119f0…` |
+
+External standard references. **(v)** means the bibliographic details were verified this session; **(c)** means they are cited from memory and need a practitioner check:
+- [M79] R. C. Merkle, *Secrecy, Authentication, and Public Key Systems*, Ph.D. thesis, Stanford University, 1979. (v)
+- [HS91] S. Haber, W. S. Stornetta, "How to time-stamp a digital document," *J. Cryptology* 3(2):99–111, 1991, doi:10.1007/BF00196791. (v)
+- [D89] I. Damgård, "A Design Principle for Hash Functions," CRYPTO '89 (LNCS 435), 1990; and [M89] R. C. Merkle, "One Way Hash Functions and DES," same volume. (c; the Merkle–DES item is listed in HS91's references)
+
+The proof sketch below names G3 for uniqueness of the backward walk except with collision probability. The citation sentence carried with that reduction is: This is the standard hash-chain/Merkle–Damgård argument ([M79], [D89]/[M89]). Its use for tamper-evident ordered records follows [HS91].
+
+### Assumptions
+
+**[ASSUME] A3 (unambiguous encoding).** \(\langle\cdot\rangle\) is an injective, length-prefixed encoding of tuples.
+
+**[ASSUME] A4 (collision resistance).** For every efficient procedure \(\mathcal B\), \(\Pr[\mathcal B \text{ outputs } x\ne x' \text{ with } H(x)=H(x')]\le\epsilon_{\mathrm{coll}}\). This is a computational assumption about the chosen \(H\) (e.g. SHA-256). It is not a theorem.
+
+**Receipts.** For a hash \(H:\{0,1\}^*\to\{0,1\}^\lambda\) and domain tags \(\tau_0\ne\tau\):
+\[R_0=H\langle\tau_0,\,0,\,S_0\rangle,\qquad R_{j+1}=H\langle\tau,\,j{+}1,\,R_j,\,\delta_j,\,S_{j+1}\rangle.\]
+(Binding \(H(\delta_j)\) and a Merkle root of \(S_{j+1}\) in place of the raw values gives the same results. Collisions then also count collisions of the inner hash or tree.)
+
+**Setting.** A verifier holds a set \(\mathcal Q\) of claimed receipt records \((j,R_j,\text{pred}=R_{j-1})\) and a trusted head \((m,R_m)\).
+
+**Statement (under A4).**
+1. *Missing link.* If, walking back from \(R_m\) by predecessor references, some referenced \(R_{j-1}\) is absent from \(\mathcal Q\) (and from regenerable data), the gap at index \(j-1\) is detected and localized.
+2. *Fork.* If two distinct records claim the same predecessor and the same index, at most one lies on the path to the trusted \(R_m\) unless a collision exists. The fork is detected and the off-path branch is identified.
+3. *Stale or out-of-sequence binding.* A record claiming index \(j\) whose predecessor's index is not \(j-1\), or whose predecessor is not the current head when appended, violates the index field bound in the hash. It is detected (cf. STCM-L verdicts: missing prior, hash mismatch, stale, superseded, competing chains).
+4. *Limit.* Without a trusted head index \(m\), truncation of the tail (dropping \(R_{m'}\ldots R_m\)) is undetectable. Trusted anchoring of the head is necessary.
+
+**Proof sketch.**
+1. Every \(R_j\) commits to \((j,R_{j-1})\) (A3).
+2. The backward walk from a trusted \(R_m\) is unique except with collision probability (G3).
+3. Any record not on that walk either fails linkage (cases 1 and 3) or shares a predecessor with an on-path record (case 2).
+4. Case 4: an untrusted shorter chain is internally consistent.
+∎
+
+| Item | Status | Rests on |
+|---|---|---|
+| G7 continuity | NEW discrete lemma; proof sketch | A3, A4, trusted head |
