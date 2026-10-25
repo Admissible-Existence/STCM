@@ -1,0 +1,184 @@
+{
+ "schema": "stegverse.task-catalog/v1",
+ "repository": "Admissible-Existence/STCM",
+ "goal_id": "G17-WORKFLOW-SURFACE-MINIMIZATION",
+ "authority": "Rigel 2026-10-24 retroactive G17 enforcement (StegVerse-org/.github#166); pattern StegVerse-Labs/StegDB#60 (eab2e773)",
+ "dispatcher": ".github/workflows/validation-dispatcher.yml",
+ "runner": "tools/tasks/run_catalog.py",
+ "runner_source": "StegVerse-Labs/StegDB tools/tasks/run_catalog.py @ eab2e773271f3e63466a710f1b4555f677882848 (sha256 f741f30557888fd8e4852a52adfc65736a08898d49ade7519f6bcc2672921e9b), copied unmodified",
+ "rule": "Every check a folded workflow job ran is one group here; its step bodies are the original run blocks byte for byte, pinned by sha256, except the repairs listed. A new check is a new group (or a step in one), never a new workflow file.",
+ "path_filters": "Dropped: every group runs on every pull_request and push to main (a superset of the original path-filtered runs). workflow_dispatch/schedule triggers are not carried (no manual dispatch, no cron).",
+ "repairs": [],
+ "folded_from_commit": "74262cbb01babd186002f463bb613ba51f7fe5ab",
+ "groups": [
+  {
+   "id": "core-lite-intake.dispatch",
+   "source": {
+    "workflow": ".github/workflows/core-lite-intake.yml",
+    "workflow_name": "core-lite-intake",
+    "job": "dispatch",
+    "job_name": null,
+    "commit": "74262cb",
+    "triggers_before": [
+     "workflow_dispatch",
+     "push"
+    ],
+    "permissions_before": {
+     "contents": "read"
+    }
+   },
+   "events": [
+    "pull_request",
+    "push"
+   ],
+   "env": {},
+   "steps": [
+    {
+     "name": "Install dispatcher deps",
+     "run_file": "tools/tasks/steps/core-lite-intake.dispatch/01-install-dispatcher-deps.sh",
+     "run_sha256": "090bd1ed4c2258c5915c01d75045328156302b9f39b2be6f2d8f6468bfbac4bd"
+    },
+    {
+     "name": "Run registered task(s)",
+     "run_file": "tools/tasks/steps/core-lite-intake.dispatch/02-run-registered-task-s.sh",
+     "run_sha256": "cb2051e09256642ea6c60055a2b4e22116a46cbc39bff8457177f9def9c2876f",
+     "env": {
+      "ONLY_TASK": "${{ github.event.inputs.task_id }}"
+     }
+    }
+   ],
+   "artifacts": [
+    {
+     "name": "core-lite-intake-reports",
+     "path": "reports/**/*.json\ntools/closure-harness/reports/**/*.json\n",
+     "if_no_files_found": "warn",
+     "if": "always()"
+    }
+   ],
+   "runner": {
+    "fetch_depth": "1",
+    "persist_credentials": "true",
+    "timeout_minutes": 30,
+    "python_version": "3.11",
+    "artifact_name": "core-lite-intake-reports",
+    "artifact_if_no_files_found": "warn"
+   }
+  },
+  {
+   "id": "stcm-build.verify-stcm",
+   "source": {
+    "workflow": ".github/workflows/stcm-build.yml",
+    "workflow_name": "STCM Build",
+    "job": "verify-stcm",
+    "job_name": null,
+    "commit": "74262cb",
+    "triggers_before": [
+     "workflow_dispatch",
+     "pull_request",
+     "push"
+    ],
+    "permissions_before": {
+     "contents": "read"
+    }
+   },
+   "events": [
+    "pull_request",
+    "push"
+   ],
+   "env": {},
+   "steps": [
+    {
+     "name": "Run STCM build",
+     "run_file": "tools/tasks/steps/stcm-build.verify-stcm/01-run-stcm-build.sh",
+     "run_sha256": "f6811069a6447a100403f60cdb06b04e7b5cce5aa2a8e6beed375a6bdc36401a"
+    },
+    {
+     "name": "Run closure policy and PN harness",
+     "run_file": "tools/tasks/steps/stcm-build.verify-stcm/02-run-closure-policy-and-pn-harness.sh",
+     "run_sha256": "7229733533e082b90c0d8cdef44323a6e90d1fe3825d3b8baa189c57ec3a8dfe"
+    },
+    {
+     "name": "Verify generated outputs are current",
+     "run_file": "tools/tasks/steps/stcm-build.verify-stcm/03-verify-generated-outputs-are-current.sh",
+     "run_sha256": "dae5d8841fd868f3db8aabc5508b34aae1d2fc0aa4b9610c471ef2fc5de6c1f2"
+    }
+   ],
+   "artifacts": [
+    {
+     "name": "stcm-closure-harness-receipt",
+     "path": "dist/closure-harness-report.json",
+     "if_no_files_found": "warn",
+     "if": "success()"
+    }
+   ],
+   "runner": {
+    "fetch_depth": "1",
+    "persist_credentials": "true",
+    "timeout_minutes": 30,
+    "python_version": "3.11",
+    "artifact_name": "stcm-closure-harness-receipt",
+    "artifact_if_no_files_found": "warn"
+   }
+  },
+  {
+   "id": "validate-cosv-projection.validate",
+   "source": {
+    "workflow": ".github/workflows/validate-cosv-projection.yml",
+    "workflow_name": "Validate COSV Projection",
+    "job": "validate",
+    "job_name": null,
+    "commit": "74262cb",
+    "triggers_before": [
+     "pull_request",
+     "push",
+     "workflow_dispatch"
+    ],
+    "permissions_before": {
+     "contents": "read"
+    }
+   },
+   "events": [
+    "pull_request",
+    "push"
+   ],
+   "env": {},
+   "steps": [
+    {
+     "name": "Validate COSV projection",
+     "run_file": "tools/tasks/steps/validate-cosv-projection.validate/01-validate-cosv-projection.sh",
+     "run_sha256": "c1f990fd59fa0031cb8e9b7d4f708ec9df776034b036699a42287ea784a5fbe5"
+    }
+   ],
+   "artifacts": [],
+   "runner": {
+    "fetch_depth": "1",
+    "persist_credentials": "false",
+    "timeout_minutes": 30,
+    "python_version": "3.12"
+   }
+  },
+  {
+   "id": "workflow-surface-registry.validate",
+   "catalog_addition": "G17 registry gate (no folded source workflow)",
+   "events": [
+    "pull_request",
+    "push"
+   ],
+   "env": {},
+   "steps": [
+    {
+     "name": "Workflow files equal the registered surfaces; catalog verifies ALLOW",
+     "run_file": "tools/tasks/steps/workflow-surface-registry.validate/01-registry.sh",
+     "run_sha256": "811824e88664923006be2eeb35632d710f5504145967f61632ad9e8fbdcb35ca"
+    }
+   ],
+   "artifacts": [],
+   "runner": {
+    "fetch_depth": "1",
+    "persist_credentials": "false",
+    "timeout_minutes": 10,
+    "python_version": "3.11"
+   }
+  }
+ ]
+}
