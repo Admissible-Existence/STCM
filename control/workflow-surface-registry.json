@@ -1,0 +1,110 @@
+{
+ "schema": "stegverse.workflow-surface-registry/v1",
+ "goal_id": "G17-WORKFLOW-SURFACE-MINIMIZATION",
+ "repository": "Admissible-Existence/STCM",
+ "policy_issue": "StegVerse-Labs/.github#167, #168; StegVerse-org/.github#166",
+ "preferred_repository_workflow_count_max": 2,
+ "exception_repository_workflow_count_max": 3,
+ "credential_authority": "the SKAP Vault inside KV is the only PII and credential store for every user, including the StegVerse ecosystem's own; no secret or token is referenced, introduced or moved by this fold",
+ "invariants": [
+  "Every workflow file is registered in surfaces[]; an unregistered or changed one fails closed (tests/test_workflow_surface_registry.py).",
+  "A new check is a group in tools/tasks/task_catalog.json, never a new workflow file.",
+  "The stable dispatcher carries no workflow_dispatch, schedule, repository_dispatch, issues or workflow_run trigger; a kept surface is pinned by sha256 and unchanged by the fold."
+ ],
+ "unregistered_workflow_outcome": {
+  "disposition": "FAIL_CLOSED",
+  "failure_code": "UNREGISTERED_WORKFLOW_SURFACE",
+  "failed_predicate": "EVERY_WORKFLOW_FILE_IS_REGISTERED",
+  "required_evidence_or_repair": "register the file in control/workflow-surface-registry.json surfaces[] or fold it into tools/tasks/task_catalog.json",
+  "retry_entrypoint": "tests/test_workflow_surface_registry.py",
+  "owning_existing_goal": "G17-WORKFLOW-SURFACE-MINIMIZATION (StegVerse-Labs/.github#167/#168); StegVerse-org/.github#166",
+  "next_attempt": "the next pull request touching .github/workflows/"
+ },
+ "surfaces": [
+  {
+   "path": ".github/workflows/validation-dispatcher.yml",
+   "classification": "KEEP_STABLE_DISPATCHER",
+   "triggers": [
+    "pull_request",
+    "push"
+   ],
+   "permissions": {
+    "contents": "read"
+   }
+  },
+  {
+   "path": ".github/workflows/mathematical-completeness-self-audit.yml",
+   "classification": "KEEP_EXISTING_SURFACE_UNCHANGED",
+   "triggers": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "permissions": {
+    "contents": "write"
+   },
+   "reason": "KEEP_EXISTING_SURFACE_UNCHANGED (destination-owned writer): it persists reports/stcm-mathematical-completeness-receipt.json with contents: write and git push on push to main. A run block in the read-only dispatcher cannot carry that write, so it is kept unchanged and not folded or eliminated.",
+   "verbatim_sha256": "ae9814da5798fddb1b8789610b0c5e871b23cc2f9e6d79e447a948947cab19e2"
+  }
+ ],
+ "folded": [
+  {
+   "workflow": ".github/workflows/bootstrap-core-lite.yml",
+   "name": "bootstrap-core-lite",
+   "triggers_before": [
+    "workflow_dispatch"
+   ],
+   "classification": "ELIMINATE",
+   "status": "DONE",
+   "reason": "ELIMINATE: its only trigger is workflow_dispatch (a skeleton and workflow-count check). Manual dispatch is not run by the maintenance lane and no dispatch is added. Its workflow-count invariant (at most 2 workflow files) holds after this change. Restorable byte for byte from the verbatim record.",
+   "verbatim_record": "tools/tasks/folded/bootstrap-core-lite.yml",
+   "verbatim_sha256": "9e817c5e41521deabb73f46f5b33819775a468b7af1d9ff2cb3bd03ceadf26d9"
+  },
+  {
+   "workflow": ".github/workflows/core-lite-intake.yml",
+   "name": "core-lite-intake",
+   "triggers_before": [
+    "workflow_dispatch",
+    "push"
+   ],
+   "classification": "CONSOLIDATE_INTO_STABLE_DISPATCHER",
+   "status": "DONE",
+   "catalog_groups": [
+    "core-lite-intake.dispatch"
+   ],
+   "verbatim_record": "tools/tasks/folded/core-lite-intake.yml",
+   "verbatim_sha256": "f77b2b295168d159f7d264d7bfcfe17eb3e33bb36d8b1eec79fc1ecb8517ce3d"
+  },
+  {
+   "workflow": ".github/workflows/stcm-build.yml",
+   "name": "STCM Build",
+   "triggers_before": [
+    "workflow_dispatch",
+    "pull_request",
+    "push"
+   ],
+   "classification": "CONSOLIDATE_INTO_STABLE_DISPATCHER",
+   "status": "DONE",
+   "catalog_groups": [
+    "stcm-build.verify-stcm"
+   ],
+   "verbatim_record": "tools/tasks/folded/stcm-build.yml",
+   "verbatim_sha256": "f79a15e9b9f31bbbf98d791d72c0f8d7a48cf4f9e869b900529d8334b680ec48"
+  },
+  {
+   "workflow": ".github/workflows/validate-cosv-projection.yml",
+   "name": "Validate COSV Projection",
+   "triggers_before": [
+    "pull_request",
+    "push",
+    "workflow_dispatch"
+   ],
+   "classification": "CONSOLIDATE_INTO_STABLE_DISPATCHER",
+   "status": "DONE",
+   "catalog_groups": [
+    "validate-cosv-projection.validate"
+   ],
+   "verbatim_record": "tools/tasks/folded/validate-cosv-projection.yml",
+   "verbatim_sha256": "380598cd0b8bcba7bf47626489363390e8e3768e7c454bef67596d01d500d1ec"
+  }
+ ]
+}

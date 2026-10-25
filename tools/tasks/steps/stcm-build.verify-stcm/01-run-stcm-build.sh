@@ -1,0 +1,1 @@
+python tools/run_stcm_build.py
